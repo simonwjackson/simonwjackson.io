@@ -7,11 +7,14 @@
     "start": "next start"
   },
   "dependencies": {
+    "@material-ui/core": "^4.11.0",
+    "@material-ui/icons": "^4.9.1",
     "@mdx-js/loader": "^1.5.1",
     "@next/mdx": "^9.1.1",
     "next": "latest",
     "react": "^16.8.6",
-    "react-dom": "^16.8.6"
+    "react-dom": "^16.8.6",
+    "react-scrollspy": "^3.4.3"
   },
   "devDependencies": {},
   "license": "MIT"
