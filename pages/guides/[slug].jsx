@@ -17,8 +17,6 @@ const Article = ({ filename, ...props}) => {
 
 export async function getStaticProps({ params }) {
     const filename = path.join("guides", params.slug, "index.mdx")
-    // const frontmatter = matter(mdxPost)
-    console.log('the params',   params)
 
     return {
         props: {
@@ -30,7 +28,6 @@ export async function getStaticProps({ params }) {
 export async function getStaticPaths() {
     const postsDirectory = path.join(process.cwd(), 'guides')
     const mdxFiles = fs.readdirSync(postsDirectory)
-    console.log('the queried pages', mdxFiles)
 
     // Loop through all post files and create array of slugs (to create links)
     const paths = mdxFiles.map(filename => ({
