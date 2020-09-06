@@ -1,0 +1,197 @@
+export const meta = {
+  title: 'Alpine Server',
+}
+
+# Alpine Server
+## DIY Docker & KVM hypervisor solution with alpine
+
+
+### First off
+
+As root (local)
+
+```bash
+adduser --ingroup users --uid 1000 USERNAME_HERE
+```
+
+on local mahine 
+
+```bash
+ssh-copy-id <IP_ADDR>
+```
+
+```bash
+su -
+apk add sudo
+printf "USERNAME_HERE ALL = (ALL:ALL) ALL\n" | tee -a /etc/sudoers
+```
+
+```bash
+sed -i 's/#\?\(PermitRootLogin\s*\).*$/\1 no/' /etc/ssh/sshd_config && \
+sed -i 's/#\?\(PubkeyAuthentication\s*\).*$/\1 yes/' /etc/ssh/sshd_config && \
+sed -i 's/#\?\(PermitEmptyPasswords\s*\).*$/\1 no/' /etc/ssh/sshd_config && \
+sed -i 's/#\?\(PasswordAuthentication\s*\).*$/\1 no/' /etc/ssh/sshd_config
+```
+
+```bash
+rc-service sshd restart
+```
+
+```bash
+printf "http://dl-cdn.alpinelinux.org/alpine/edge/main\nhttp://dl-cdn.alpinelinux.org/alpine/edge/community\nhttp://dl-cdn.alpinelinux.org/alpine/edge/testing" | tee /etc/apk/repositories
+```
+
+```bash
+apk update
+apk upgrade --update-cache --available
+```
+
+*reboot*
+
+### Docker
+
+```bash
+apk add \
+  git \
+  docker \
+  docker-compose
+``` 
+
+```bash
+echo '{ "data-root": "/media/pool/nvme/sam-1tb/docker" }' | sudo tee /etc/docker/daemon.json
+```
+
+```bash
+rc-update add docker boot
+```
+
+```bash
+sudo addgroup simonwjackson docker
+```
+
+### MergerFS
+
+```bash
+apk add \
+  e2fsprogs \
+  mergerfs \
+  util-linux
+```
+
+```bash
+echo fuse >> /etc/modules
+modprobe fuse 
+mkdir /storage
+```
+
+```bash
+UUID=93cb282b-7d9a-4348-b952-5d24c8e1db6b  /media/pool/nvme/sam-1tb  xfs            defaults  0 1
+UUID=a86e6c28-fc61-41b2-a8ea-a3e852dce282  /media/pool/hdd/tank      xfs            defaults  0 1
+/media/pool/nvme/sam-1tb:/media/pool/hdd/tank  /storage              fuse.mergerfs  defaults,allow_other,use_ino,fsname=mergerFS  0  0
+```
+
+### KVM
+
+```bash
+apk add \
+  qemu-img \
+  qemu-system-x86_64 \
+```
+
+```bash
+sudo addgroup simonwjackson kvm
+sudo addgroup simonwjackson qemu
+```
+
+```bash
+echo tun >> /etc/modules
+echo kvm >> /etc/modules
+echo kvm_intel >> /etc/modules
+```
+
+### GPU
+
+```bash
+sudo apk add pciutils
+```
+
+```bash
+lspci -nn
+```
+
+```bash
+01:00.0 VGA compatible controller [0300]: NVIDIA Corporation TU102 [GeForce RTX 2080 Ti Rev. A] [10de:1e07] (rev a1)
+01:00.1 Audio device [0403]: NVIDIA Corporation TU102 High Definition Audio Controller [10de:10f7] (rev a1)
+01:00.2 USB controller [0c03]: NVIDIA Corporation TU102 USB 3.1 Host Controller [10de:1ad6] (rev a1)
+```
+
+```bash
+sudo touch /etc/modprobe.d/vfio.conf
+```
+
+```
+options vfio_iommu_type1 allow_unsafe_interrupts=1
+options vfio-pci ids=10de:1e07,10de:10f7,10de:1ad6,10de:1ad7
+options vfio-pci disable_vga=1
+```
+
+#### /etc/modules
+
+```bash
+vfio_virqfd
+vfio
+vfio_iommu_type1
+vfio_pci ids=10de:1e07,10de:10f7,10de:1ad6
+```
+
+```bash
+sudo mkinitfs
+```
+
+#### /etc/default/grub
+
+```bash
+GRUB_CMDLINE_LINUX_DEFAULT="... intel_iommu=on iommu=pt vfio-pci.ids=10de:1e07,10de:10f7,10de:1ad6"
+```
+
+```bash
+grub-mkconfig -o /boot/grub/grub.cfg
+```
+
+**reboot**
+
+### Windows		
+
+#### DL UEFI
+https://www.kraxel.org/repos/jenkins/edk2/edk2.git-ovmf-x64-0-20200515.1431.ga3741780fe.noarch.rpm
+
+### Create Bridge
+
+```bash
+apk add bridge
+```
+
+#### /etc/network/interfaces
+
+```
+auto lo
+iface lo inet loopback
+
+auto br0
+iface br0 inet dhcp
+        hostname peach
+        bridge_ports eth0	
+        bridge_stp 0
+        bridge_maxwait 0
+        post-up ip link set br0 address 5c:39:db:c9:cc:4b
+	post-up iptables -A FORWARD -p all -i br0 -j ACCEPT
+        pre-down iptables -D FORWARD -p all -i br0 -j ACCEPT
+
+# iptables lines are to allow KVM and docker to both use bridge
+```
+
+#### /etc/qemu/bridge.conf
+
+```
+allow br0
+```

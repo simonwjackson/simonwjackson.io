@@ -1,26 +1,50 @@
 import fs from 'fs'
 import React from 'react'
 import path from 'path'
-import dynamic from 'next/dynamic'
+import Article from '../../components/Article'
+import ResponsiveDrawer from '../../components/ResponsiveDrawer'
 
-const Article = ({ filename, ...props}) => {
-  const { 
-      default: Content, 
-      meta 
-  } = require('../../' + filename)
+// TODO: Refactor `importAll` into module
+export const importAll = context => {
+  return context
+    .keys()
+    .map(key => [key, context(key)])
+}
 
-  return (<>
-    <h1>BOO!</h1>
-    <Content />
-  </>)  
+const getSlug = str => str
+  .replace('/index.mdx', '')
+  .replace('./', '')
+
+const Slug = ({ filename, slug, ...props}) => {
+    const { 
+        default: Content, 
+        meta 
+    } = require('../../' + filename)
+
+    const posts = importAll(
+        require.context('../../guides', true, /\.mdx?$/)
+    ).map(([file, { meta: { title } }]) => ({
+        title,
+        slug: getSlug(file)
+    }))
+
+  return (
+    <>
+        <ResponsiveDrawer items={posts} />
+        <Article> 
+            <Content />
+        </Article>
+    </>
+  )  
 }
 
 export async function getStaticProps({ params }) {
     const filename = path.join("guides", params.slug, "index.mdx")
-
+    
     return {
         props: {
-            filename
+            filename,
+            slug: params.slug
         },
     }
 }
@@ -42,4 +66,4 @@ export async function getStaticPaths() {
     }
 }
 
-export default Article
+export default Slug 
