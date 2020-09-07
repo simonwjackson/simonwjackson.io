@@ -18,6 +18,12 @@ const useStyles = makeStyles(theme => ({
       },
     },
   },
+  "@global": {
+    '.hljs': {
+      fontSize: '1rem !important',
+      padding: '1rem 1.5rem !important'
+    },
+  },
   content: {
     flexGrow: 1,
     padding: theme.spacing(3),

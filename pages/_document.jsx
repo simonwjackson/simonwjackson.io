@@ -9,6 +9,7 @@ export default class MyDocument extends Document {
     return (
       <Html lang="en">
         <body>
+          <link rel="stylesheet" href="https://highlightjs.org/static/demo/styles/railscasts.css" /> 
           <Main />
           <NextScript />
         </body>
