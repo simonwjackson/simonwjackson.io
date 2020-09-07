@@ -4,7 +4,6 @@ import path from 'path'
 import Article from '../../components/Article'
 import ResponsiveDrawer from '../../components/ResponsiveDrawer'
 
-// TODO: Refactor `importAll` into module
 export const importAll = context => {
   return context
     .keys()
@@ -23,15 +22,18 @@ const Slug = ({ filename, slug, ...props}) => {
 
     const posts = importAll(
         require.context('../../guides', true, /\.mdx?$/)
-    ).map(([file, { meta: { title } }]) => ({
-        title,
-        slug: getSlug(file)
-    }))
+    ) 
+    .map(([file, { meta: { title, ...rest2 } , ...rest}]) => { 
+        return ({
+            title,
+            slug: getSlug(file)
+        })
+    })
 
   return (
     <>
         <ResponsiveDrawer items={posts} />
-        <Article> 
+        <Article meta={meta}> 
             <Content />
         </Article>
     </>

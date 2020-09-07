@@ -1,41 +1,32 @@
 export const meta = {
   title: 'Alpine Server',
+  subtitle: "DIY Docker & KVM hypervisor solution with alpine"
 }
 
-# Alpine Server
-## DIY Docker & KVM hypervisor solution with alpine
+# Getting Started
 
-### First off
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ac ipsum eu augue ornare lacinia. Sed sed sagittis sapien, sit amet fermentum erat. Praesent semper tempor aliquet. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Duis porttitor molestie dolor malesuada dignissim. Suspendisse scelerisque convallis purus, vel tincidunt velit ullamcorper id. Curabitur a tortor a ante accumsan feugiat placerat vel diam. Proin dolor est, aliquam in felis ut, fringilla ultricies justo. Vivamus eget mi sed magna commodo elementum. Nulla facilisi. Nunc euismod mollis lacus non viverra. 
 
-```css https://stackoverflow.com/questions/4042434/converting-arrayliststring-to-string-in-java
-h1 {
-  color: red;
-}
-```
-
-~~~java https://stackoverflow.com/questions/4042434/converting-arrayliststring-to-string-in-java
-List<String> list = ..;
-String[] array = list.toArray(new String[0]);
-~~~
- 
-But leave this the same:
- 
-~~~java
-List<String> list = ..;
-String[] array = list.toArray(new String[0]);
-~~~
+# Create Your User
 
 As root (local)
 
 ```bash
-adduser --ingroup users --uid 1000 USERNAME_HERE
+adduser \
+  --ingroup users \
+  --uid 1000 \
+  USERNAME_HERE
 ```
 
-on local mahine 
+# Copy your SSH keys
+
+Because this server is (should be) headless, lets get our SSH keys copied over so we can finish this guide from the comfort of our workstation.
 
 ```bash
-ssh-copy-id <IP_ADDR>
+ssh-copy-id USERNAME@HOST
 ```
+
+# Become Super
 
 ```bash
 su -

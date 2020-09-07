@@ -7,6 +7,7 @@ import {
 import React, { useEffect, useState, useRef } from 'react'
 import Scrollspy from 'react-scrollspy'
 import { useRouter } from 'next/router'
+import Typography from '@material-ui/core/Typography' 
 
 
 const useStyles = makeStyles(theme => ({
@@ -26,7 +27,7 @@ const useStyles = makeStyles(theme => ({
   },
   content: {
     flexGrow: 1,
-    padding: theme.spacing(3),
+    padding: `${theme.spacing(6)}px ${theme.spacing(3)}px`,
   }, 
   scrollSpyContent: {
     top: theme.spacing(2.25),
@@ -48,12 +49,18 @@ const useStyles = makeStyles(theme => ({
     minHeight: '100vh',
   },
   article: {
-    '& > h1, & > p': {
-      marginBottom: theme.spacing(6)
+    '& h3, & h4, & h5, & h6': {
+      fontWeight: 'bold'
     },
-    '& > h2': {
-      marginBottom: theme.spacing(2.5)
-    }
+    '& > h3, & > h4, & > h5, & > h6': {
+      marginTop: theme.spacing(9)
+    },
+    '& > p, & > pre': {
+      marginTop: theme.spacing(3)
+    },
+    // '& > h2': {
+    //   marginBottom: theme.spacing(2.5)
+    // }
   },
   contentLink: {
     borderLeftWidth: theme.spacing(.5),
@@ -71,10 +78,26 @@ const useStyles = makeStyles(theme => ({
       fontWeight: 900
     },
   },
+  heading: {
+    paddingBottom: theme.spacing(6),
+    display: 'block',
+    borderBottom: '1px solid #ccc',
+    
+    '& h2': {
+      marginBottom: theme.spacing(1), 
+    },
+
+    '& h3': {
+      fontWeight: 'unset'
+    }
+  }, 
+  subtitle: {
+    color: 'rgb(116, 129, 141)'
+  }
 }))
 
 export const Article = props => {
-  const { children } = props
+  const { children, meta } = props
 
   const router = useRouter() 
   const classes = useStyles()
@@ -99,6 +122,19 @@ export const Article = props => {
         <article
           className={classes.article}
           ref={articleRef}> 
+          <heading className={classes.heading}>
+            <hgroup> 
+              <Typography
+                variant="h3"
+                component="h2"
+              >{meta.title}</Typography>
+              <Typography
+                variant="h6"
+                component="h3"
+                className={classes.subtitle}
+              >{meta.subtitle}</Typography> 
+            </hgroup>
+          </heading>
           {children} 
         </article> 
         

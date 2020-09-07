@@ -31,7 +31,7 @@ const useStyles = makeStyles(theme => ({
   menuButton: {
     position: 'fixed',
     height: 'fit-content',
-    top: theme.spacing(4.25),
+    top: theme.spacing(6.25),
     left: -(theme.spacing(3)),
 
     [theme.breakpoints.up(720)]: { 

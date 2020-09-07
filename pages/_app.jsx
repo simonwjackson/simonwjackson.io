@@ -15,29 +15,29 @@ const makeId = children => {
 
 const mdComponents = {
   h1: props => <Typography
-    variant="h4"
-    component="h1"
+    variant="h5"
+    component="h3"
     {...props}
   />,
   h2: props => <Typography
-    variant="h5"
-    component="h2"
+    variant="h6"
+    component="h4"
     {...props}
   />,
   h3: props => <Typography
     variant="h6"
-    component="h3"
+    component="h5"
     id={makeId(props.children)}
     {...props}
   />,
   h4: props => <Typography
     variant="h6"
-    component="h4"
+    component="h6"
     {...props}
   />,
   h5: props => <Typography
     variant="h6"
-    component="h5"
+    component="h6"
     {...props}
   />,
   h6: props => <Typography
