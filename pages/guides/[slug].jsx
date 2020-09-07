@@ -40,6 +40,12 @@ const Slug = ({ filename, slug }) => {
     )  
 }
 
+/**
+ * @todo refactor MDX file finder function
+ * @body The current implementation is brittle.. only files from 
+ * ../../guide/<slug>/index.mdx are imported
+ */
+
 // Specify dynamic routes to pre-render based on data.
 export async function getStaticPaths() {
     const postsDirectory = path.join(process.cwd(), 'guides')

@@ -9,7 +9,9 @@ import Scrollspy from 'react-scrollspy'
 import { useRouter } from 'next/router'
 import Typography from '@material-ui/core/Typography' 
 
-
+/**
+ * @todo Move common styles into theme
+ */
 const useStyles = makeStyles(theme => ({
   overrides: {
     ListItem: {

@@ -9,6 +9,9 @@ export default class MyDocument extends Document {
     return (
       <Html lang="en">
         <body>
+          {/**
+           * @todo bring highlight.js css stylesheet in house
+          */}
           <link rel="stylesheet" href="https://highlightjs.org/static/demo/styles/railscasts.css" /> 
           <Main />
           <NextScript />
