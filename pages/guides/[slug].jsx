@@ -2,8 +2,17 @@ import fs from 'fs'
 import React from 'react'
 import path from 'path'
 import Article from '../../components/Article'
+import ResponsiveDrawer from '../../components/ResponsiveDrawer'
 
+export const importAll = context => {
+  return context
+    .keys()
+    .map(key => [key, context(key)])
+}
 
+export const getSlug = str => str
+  .replace('/index.mdx', '')
+  .replace('./', '')
 
 const Slug = ({ filename, slug }) => {
     const { 
@@ -11,10 +20,23 @@ const Slug = ({ filename, slug }) => {
         meta 
     } = require(`../../${filename}`)
 
+    const posts = importAll(
+      require.context('../../guides', true, /\.mdx?$/)
+    ) 
+    .map(([file, { meta: { title }}]) => { 
+      return ({
+        title,
+        slug: getSlug(file)
+      })
+    })
+
     return (
-        <Article meta={meta}> 
+        <>
+          <ResponsiveDrawer items={posts} /> 
+          <Article meta={meta}> 
             <Content />
-        </Article>
+          </Article>
+        </>
     )  
 }
 
@@ -25,14 +47,15 @@ export async function getStaticPaths() {
 
     // Loop through all post files and create array of slugs (to create links)
     const paths = mdxFiles.map(filename => ({
-        params: {
-            slug: filename.replace(".mdx", "")
-        }
+      params: {
+        filename,
+        slug: filename.replace(".mdx", "")
+      }
     }));
 
     return {
-        paths,
-        fallback: false
+      paths,
+      fallback: false
     }
 }
 
