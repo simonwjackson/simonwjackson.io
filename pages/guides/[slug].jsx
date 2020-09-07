@@ -2,55 +2,23 @@ import fs from 'fs'
 import React from 'react'
 import path from 'path'
 import Article from '../../components/Article'
-import ResponsiveDrawer from '../../components/ResponsiveDrawer'
 
-export const importAll = context => {
-  return context
-    .keys()
-    .map(key => [key, context(key)])
-}
 
-const getSlug = str => str
-  .replace('/index.mdx', '')
-  .replace('./', '')
 
-const Slug = ({ filename, slug, ...props}) => {
+const Slug = ({ filename, slug }) => {
     const { 
         default: Content, 
         meta 
-    } = require('../../' + filename)
+    } = require(`../../${filename}`)
 
-    const posts = importAll(
-        require.context('../../guides', true, /\.mdx?$/)
-    ) 
-    .map(([file, { meta: { title, ...rest2 } , ...rest}]) => { 
-        return ({
-            title,
-            slug: getSlug(file)
-        })
-    })
-
-  return (
-    <>
-        <ResponsiveDrawer items={posts} />
+    return (
         <Article meta={meta}> 
             <Content />
         </Article>
-    </>
-  )  
+    )  
 }
 
-export async function getStaticProps({ params }) {
-    const filename = path.join("guides", params.slug, "index.mdx")
-    
-    return {
-        props: {
-            filename,
-            slug: params.slug
-        },
-    }
-}
-
+// Specify dynamic routes to pre-render based on data.
 export async function getStaticPaths() {
     const postsDirectory = path.join(process.cwd(), 'guides')
     const mdxFiles = fs.readdirSync(postsDirectory)
@@ -67,5 +35,17 @@ export async function getStaticPaths() {
         fallback: false
     }
 }
+
+// Fetch data at build time
+export async function getStaticProps({ params }) {
+    const filename = path.join("guides", params.slug, "index.mdx")
+
+    return {
+        props: {
+            filename,
+            slug: params.slug,
+        },
+    }
+} 
 
 export default Slug 
