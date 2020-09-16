@@ -77,6 +77,15 @@ rc-update add docker boot
 sudo addgroup simonwjackson docker
 ```
 
+The following command will allow you to react to file changes inside of your container.
+(Tests, hot reloading, etc)
+
+```bash
+echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
+```
+
+[Reference](https://github.com/gatsbyjs/gatsby/issues/11406#issuecomment-458769756)
+
 ### MergerFS
 
 ```bash
