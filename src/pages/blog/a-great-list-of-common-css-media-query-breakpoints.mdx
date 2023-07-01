@@ -1,0 +1,50 @@
+import { ArticleLayout } from '@/components/ArticleLayout'
+
+export const meta = {
+  author: 'Simon W. Jackson',
+  date: '2013-05-27',
+  title: 'A great list of common CSS @media query breakpoints',
+  description: 'I’ve collected a list of break points for various devices.'
+}
+
+export default (props) => <ArticleLayout meta={meta} {...props} />
+
+I’ve collected a list of break points for various devices. However, keep in mind that [The lack of a media query is your first media query](https://web.archive.org/web/20140206061024/https://twitter.com/bryanrieger)
+
+```css
+/* === Mobile devices - Portrait (320px wide) === */
+
+@media only screen and (min-width : 20em) {
+
+}
+
+/* === Mobile devices - Landscape (480px wide) === */
+
+@media only screen and (min-width : 30em) {
+
+}
+
+/* === Tablet devices - Portrait (768px wide) === */
+
+@media only screen and (min-width : 48em) {
+
+}
+
+/* === Tablet devices - Landscape (900px wide) === */
+
+@media only screen and (min-width : 56.25em) {
+
+}
+
+/* === Netbook devices (1100px wide) === */
+
+@media only screen and (min-width : 68.75em) {
+
+}
+
+/* === Desktop devices (1300px wide) === */
+
+@media only screen and (min-width : 81.25em) {
+
+}
+```

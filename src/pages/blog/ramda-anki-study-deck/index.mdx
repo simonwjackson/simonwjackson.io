@@ -1,0 +1,116 @@
+import { ArticleLayout } from '@/components/ArticleLayout'
+import Image from 'next/image'
+import screenshot from './ramda-anki-study-deck.webp' 
+
+export const meta = {
+  author: 'Simon W. Jackson',
+  date: '2019-02-24',
+  title: 'Ramda - Anki Study Deck',
+  description:
+    'My go-to utility function library is Ramda.js. The docs have a permanent spot in my browser tab list for quick reference. In order to reduce frequent context switching, I\'ve decided to created a Ramda study deck for Anki.'
+}
+
+export default (props) => <ArticleLayout meta={meta} {...props} />
+
+<Image src={screenshot} alt="Example card in the Ramda study deck for Anki" />
+
+My go-to utility function library is Ramda.js. The docs have a permanent spot in my browser tab list for quick reference. Rather than context switching between tabs, I've decided to created a Ramda study deck for Anki.
+
+
+### Script
+
+To create the deck, you can scrape the docs with this snippet. Run this code in the chromium devtools:
+
+```js
+[...$$(".card")].map((e=>{const r=$(":scope pre code",e).outerHTML.replace(/\n/gim,"<br>"),c=[...$$(":scope > .description > :not(pre)",e)],t=c.splice(0,1)[0].outerHTML.replace(/\n/gim," "),i=c.reduce(((e,r)=>e+r.outerHTML.replace(/\n/gim," ")),"");return{title:$("h2 a",e).innerText,summary:t,description:i,code:r}})).reduce(((e,r)=>e+`${r.title}Ω${r.summary}Ω${r.description}Ω${r.code}\n`),"");
+```
+
+Here is the unminified code:
+
+```js
+[...$$('.card')].map(el => {
+  const code = $(':scope pre code', el).outerHTML.replace(/\n/gmi, '<br>');
+  const description = [...$$(':scope > .description > :not(pre)', el)];
+  const summary = description.splice(0, 1)[0].outerHTML.replace(/\n/gmi, ' ');
+  const rest = description.reduce((html, elm) => html + elm.outerHTML.replace(/\n/gmi, ' '), '');
+  
+  return {
+    title: $('h2 a', el).innerText,
+    summary,
+    description: rest,
+    code,
+  }
+})
+.reduce((csv, obj) =>
+  csv += `${obj.title}Ω${obj.summary}Ω${obj.description}Ω${obj.code}\n`
+, '')
+```
+
+### CSS
+
+Some CSS to format the card styles:
+
+```css
+h1 {
+  text-align: center;
+}
+
+.card pre code {
+  padding: 15px;
+  display: block;
+}
+
+.hljs, pre {
+  background: #333;
+  color: #ccc;
+}
+
+.rest, .summary, .example {
+  text-align: left !important;
+}
+
+.card > code {
+  padding: 1.5rem;
+  display: inline-block;
+  line-height: 1.4;
+  font-size: inherit;
+  color: inherit;
+  -white-space: pre-wrap;
+  background-color: transparent;
+  border-radius: 0;
+  overflow: scroll;
+  text-align: left;
+}
+
+p code {
+  padding: 2px 4px;
+  font-size: 90%;
+  color: #000;
+  background-color: #eee;
+  boarder-radius: 4px;
+}
+
+code, kbd, pre, samp {
+  font-family: Menlo, Monaco, Consolas, "Courier New", monospace ;
+}
+
+code, kbd, pre, samp {
+  font-family: monospace, monospace;
+  font-size: 1em;
+}
+
+.hljs-keyword {
+  color: #fff;
+  font-weight: 700;
+}
+
+.hljs-number, .hljs-regexp, .hljs-string {
+  color: #fc9;
+}
+
+.hljs-comment {
+  color: #de6;
+}
+```
+
+Enjoy!

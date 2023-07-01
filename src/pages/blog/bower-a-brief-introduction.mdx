@@ -1,0 +1,50 @@
+import { ArticleLayout } from '@/components/ArticleLayout'
+import Image from 'next/image'
+
+export const meta = {
+  title: 'Bower: A Brief Introduction',
+  date: '2012-12-26',
+  author: 'Simon W. Jackson',
+  description: 'An introduction to an asset (HTML, CSS & Javascript) manager.'
+}
+
+export default (props) => <ArticleLayout meta={meta} {...props} />
+
+Any seasoned developer knows that their state of [flow](http://en.wikipedia.org/wiki/Flow_"psychology") is decreased when they find themselves wasting time on small, repetitive tasks. Bower sidesteps this issue by simplifying the process of finding, downloading and upgrading all of your favorite libraries and code snippets such as [jQuery](http://www.jquery.com/) and [HTML5 Boilerplate](http://html5boilerplate.com/)
+
+How do I install Bower?
+-----------------------
+
+You will first need to install [node](http://nodejs.org/) and [npm](https://npmjs.org/) on your machine.
+
+Once npm is up and running, fire up your terminal and enter:
+
+```bash
+npm install bower -g
+```
+
+> Note: The `-g` flag tells npm to install bower _globally_ instead of in the local directory
+
+Thats it! You're ready to go!
+
+How do I use Bower?
+-------------------
+
+In your terminal, make sure you're in your project's directory and enter:
+
+```bash
+bower install jquery
+```
+
+Simple as that! jQuery is now installed in the `/components` subdirectory
+
+If, for example, you are looking for a jQuery color plugin and unsure of the exact name, enter a quick search:
+
+```
+bower search color
+```
+    
+How does Bower compare to the alternatives?
+-------------------------------------------
+
+Unlike other package managers, such as [Jam](http://jamjs.org/) or [Volo](http://volojs.org/), Bower is an opinionated package manager. This means that it does not make any assumptions about the way you code. Instead, it provides a simple means of finding, installing and updating commonly used packages.
