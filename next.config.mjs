@@ -9,6 +9,10 @@ const nextConfig = {
   experimental: {
     scrollRestoration: true,
   },
+  output: 'export',
+  images: {
+    unoptimized: true
+  }
 }
 
 const withMDX = nextMDX({
