@@ -1,0 +1,81 @@
+---
+author: Simon W. Jackson
+date: 2013-01-13
+title: How I force myself to take breaks
+description: An unconventional guide to break a dirty habit.
+---
+
+> Note: This tutorial only applies to mac users and has only been tested on Mountain Lion (Mac OSX 10.8)
+
+Habits can be hard to break. One of my worst is pushing through a days work without taking any breaks while assuming that more work = more productivity. However, this couldn't be further from the truth. Many [studies show](http://www.nytimes.com/2012/06/17/jobs/take-breaks-regularly-to-stay-on-schedule-workstation.html?_r=2&) that focused work [intervals](http://simplelifehabits.com/time-habits/how-i-doubled-my-productivity-with-a-small-change) combined with [frequent breaks](http://blogs.hbr.org/schwartz/2011/12/how-to-accomplish-more-by-doin.html) will amount to greater productivity.
+
+After a little bit of tinkering, I’ve come up with a hack that forces me to step away from my computer for a predetermined amount of time.
+
+Enjoy!
+
+
+Overview
+--------
+
+The hack goes like this:
+
+1.  Once activated, the script will launch the screensaver and simultaneously lock the computer.
+2.  Next, the script launches a little command line utility `changeInput` that swaps out your current keyboard layout to the [Dvorak](http://en.wikipedia.org/wiki/Dvorak_Simplified_Keyboard) layout
+3.  At this point, if you try to simply type in your password normally it will fail.
+4.  Once the predetermined break time is up, `changeInput` will return your keyboard to its original layout.
+
+The key here is that you could login again during your break if you **MUST**. However, to do so will require a tedious process of;
+
+1.  Finding a copy of the Dvorak keyboard layout (on Google via your tablet/smartphone or a printout)
+2.  **Slowly** matching the location of the keys to your password on your keyboard.
+
+During this process, you’ll have some time to think about your decision to forgo your (much needed) break.
+
+Setup Tutorial
+--------------
+
+### Screen Saver Settings
+
+First, we need to secure our screensaver.
+
+1.  Open `System Preferences` and click on the `Security &amp; Privacy` icon
+2.  Click on the `General` tab.
+3.  Check the box that starts with `Require password`.
+4.  Change the amount of time to wait after screensaver begins to `immediately`.
+
+### Activate Other Keyboard Layouts
+
+Now lets activate the alternative keyboard layout.
+
+1.  In the `System Preferences` window, click on the `Show All` button
+2.  Click the `Language &amp; Text` icon.
+3.  On the top of the window, click the the `Input Sources` tab.
+4.  On the left of the windows, you will now see a list of available keyboard layouts. Scroll down to find `Dvorak` and check the box to it’s left.
+
+### Download changeInput
+
+This little command line tool will let us script the keyboard layout change.
+
+1.  Download a copy of [changeInput](http://allancraig.net/index.php?option=com_docman&task=doc_download&gid=9&Itemid=) by [Allan Craig](http://allancraig.net/index.php?option=com_content&view=article&id=88:changing-keyboard-input-command-line-utility&catid=39:objective-c&Itemid=86) and save it to the `~/bin/` directory. > Note: You may need to create the `~/bin/` directory if it doesn’t already exist.
+
+### Set Up Pomodoro
+
+1.  Download a copy of [Pomodoro](http://www.mediafire.com/?jt8olvtad6t1biw) and launch the app. > The official website for Pomodoro seems to be broken at the moment, so I’ve taken the liberty of hosting the file myself for the time being.
+2.  Open up the app’s preference window and click on the `pomodoro` icon
+3.  Set the amount of minutes you would like to work under `Pomodoro is initially set up to:`
+4.  Click the check box under `Breaks` and set the `durationn` on the right.
+5.  At the top of the window, click on the `Scripts` tab.
+6.  Click the checkbox labeled `End`, copy the script below and paste it in the box on the right. `do shell script "open /System/Library/Frameworks/ScreenSaver.framework/Versions/A/Resources/ScreenSaverEngine.app"` `do shell script "~/bin/changeInput &gt; /tmp/myKeyboard"` `do shell script "~/bin/changeInput toggle $(cat /tmp/myKeyboard) Dvorak"`
+7.  Click the checkbox labeled `Break End`, copy the script below and paste it in the box on the right. `do shell script "~/bin/changeInput toggle $(cat /tmp/myKeyboard) Dvorak"`
+8.  Click the `General` icon located at the top of the window.
+9.  Check the box labeled `Prevent sleep during a pomodoro`
+
+### Go!
+
+1.  Click on the Pomodoro icon in the menu bar and Click `Start Pomodoro`
+2.  Pat yourself on the back for a job well done and get to work!
+
+Final Thoughts
+--------------
+
+Yes, it’s a slightly convoluted process compared to just standing up and walking away, but if you need an extra push like I did, this should get the job done.

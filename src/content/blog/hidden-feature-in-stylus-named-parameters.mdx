@@ -1,0 +1,24 @@
+---
+author: Simon W. Jackson
+date: 2013-05-24
+title: Hidden feature in Stylus - Named Parameters
+description: While playing with stylus (v0.31), i noticed that you can name your parameters when calling a function..
+---
+
+While playing with stylus (v0.31), i noticed that you can name your parameters when calling a function:
+
+```stylus
+/* Define */
+myMixin(color, font)
+    background-color color
+    font-family font
+
+/* Use */
+body
+    myMixin(color: green, font: helvetica)
+```
+    
+
+This is great for mixins with many parameters and you don't want your users to memorize the order of which they need to be defined.
+
+However, I didn't see this in the documentation. Hopefully this feature will stay in for future releases.
