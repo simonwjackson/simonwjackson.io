@@ -1,0 +1,63 @@
+---
+tags:
+  - Guide
+seo:
+  image:
+    src: '/post-1.jpg'
+    alt: A person standing at the window
+title: 'Creating a Resizable Viewport with Locked Aspect Ratio in LÖVE2D'
+description: ""
+excerpt: ""
+publishDate: 2025-02-02
+author: 'Simon W. Jackson'
+---
+
+## Introduction
+- Brief explanation of why maintaining aspect ratio is important
+- What we'll achieve: a 16:9 viewport that scales properly
+
+## 1. Basic Window Setup
+- Setting up initial window configuration
+- Explaining the importance of `love.conf`
+- Basic window properties (width, height, resizable)
+- HiDPI considerations
+
+## 2. Establishing the Game Canvas
+- Setting up base resolution (1280x720)
+- Introducing viewport variables
+- Initial `love.load()` setup
+- Why we separate window size from game canvas size
+
+## 3. Handling Window Resizing
+- Implementing the `love.resize()` callback
+- Calculating scale factors
+- Understanding aspect ratio preservation
+- The math behind `translateX` and `translateY`
+
+## 4. Drawing with Transformation
+- Using `push()` and `pop()` for transformation stack
+- Applying translation to center the viewport
+- Scaling the game canvas
+- Why we need to transform before drawing
+
+## 5. Testing and Verification
+- Drawing a test rectangle
+- Verifying proper scaling
+- Checking corner cases (minimum size, maximum size)
+- Handling different window sizes
+
+## Code Breakdown
+- Step-by-step explanation of each function
+- Key concepts and formulas
+- Common pitfalls to avoid
+
+## Best Practices
+- Performance considerations
+- HiDPI support
+- Minimum window size constraints
+- Error handling
+
+## Conclusion
+- Summary of achieved functionality
+- Potential improvements
+- Use cases for this approach

@@ -1,0 +1,769 @@
+---
+title: "Paper Based Dungeon Crawler Game: Dev Log #1"
+slug: "paper-based-dungeon-crawler-game-dev-log-1"
+imageAlt: "Colorful particle system visualization"
+demoUrl: "https://experiments.simonwjackson.com/particle-system"
+sourceUrl: "https://github.com/simonwjackson/experiments/particle-system"
+tags: ["Game Design", "React", "Typescript", "Game Development"]
+isFeatured: true
+status: "complete"
+description: "I'm creating a paper based dungeon crawler game. This is the first in a series of dev logs that will break down the game into smaller, more manageable parts."
+publishDate: 2025-01-20
+---
+import Note from '../../../components/Note.astro';
+import Media from '../../../components/Media.astro';
+
+import characterImage from './character.png';
+import coinImage from './coins.png';
+import wallImage from './wall.png';
+import dungeonImage from './paper-apps-dungeon.png';
+import enemyImage from './enemy.png';
+import exitImage from './exit.png';
+import gridImage from './with-grid.png';
+import healthImage from './health.png';
+import innerWallsImage from './with-inner-walls.png';
+import outerWallsImage from './with-outer-walls.png';
+import teleportImage from './teleport.png';
+import trapImage from './trap.png';
+import treasureImage from './treasure.png';
+import withCharacterImage from './with-character.png';
+import withCoinsImage from './with-coins.png';
+import withEnemiesImage from './with-enemies.png';
+import withExitImage from './with-exit.png';
+import withHealthImage from './with-health.png';
+import withTeleportImage from './with-teleport.png';
+import withTrapsImage from './with-traps.png';
+import withTreasureImage from './with-treasure.png';
+
+<Media image={dungeonImage.src}>
+  <strong>Note:</strong>
+  This is my breakdown of the <a href="https://gladdendesign.com/products/paper-apps-dungeon">Paper Apps Dungeon</a> by <a href="https://gladdendesign.com">Gladden</a>. If you like this, please go [buy the original game](https://gladdendesign.com/products/paper-apps-dungeon)!
+</Media>
+
+This is the first in a series of dev logs that will break down the game into smaller, more manageable parts.
+
+I'm using this as an opportunity to learn a bit about game design.
+
+<Media>
+  <strong>Note:</strong>
+  I have decided not to release the source code for this project as I do not want it to negatively impact the sales of the original game.
+
+  Please go [buy the original game](https://gladdendesign.com/products/paper-apps-dungeon)!
+</Media>
+
+## Dev Log
+
+### Create a 15x15 grid
+
+I started by creating a 15x15 grid.
+
+```tsx
+const GRID_SIZE = 15;
+
+const createEmptyGrid = (gridSize: number): GridCell[][] => {
+  return Array(gridSize).fill(null).map(() =>
+    Array(gridSize).fill(null).map(() => ({ type: 'empty' }))
+  );
+};
+```
+
+<Note>
+This works, but I find the `createEmptyGrid` function to be somewhat tedious to scan through. I might come back to this and refactor it.
+</Note>
+
+#### Simple Dot Icon
+
+I'm using a simple dot icon for the empty cells in the grid. To keep things simple, I'll be using  tailwind classes to style all the icons at this stage.
+
+```tsx
+const EmptyIcon: React.FC = () => (
+  <div className="w-1 h-1 rounded-full bg-gray-300" />
+);
+```
+
+#### Initialize Grid
+
+Passing the grid size to the `initializeGrid` function will create a grid of empty cells.
+
+```tsx
+const initializeGrid = (): GridCell[][] => {
+  let grid = [];
+
+  grid = createEmptyGrid(GRID_SIZE);
+
+  return grid
+};
+```
+
+#### Drawing the Board
+
+Here is where I loop through the multi dimensional array and draw the current state of the board.
+
+```tsx
+const Board: React.FC = () => {
+  const [grid] = useState(initializeGrid);
+
+  return (
+    <div className="grid grid-cols-15 gap-1">
+      {grid.map((row, rowIndex) => (
+        row.map((cell, colIndex) => (
+          <div
+            key={`${rowIndex}-${colIndex}`}
+            className={`w-8 h-8 flex items-center justify-center`}
+          >
+            {cell.type === 'empty' && <EmptyIcon />}
+          </div>
+        ))
+      ))}
+    </div>
+  );
+};
+```
+
+#### Result
+
+<img
+  src={gridImage.src}
+  alt="15x15 grid visualization"
+  className="my-4 border border-gray-200 rounded-lg"
+/>
+
+<Note>
+The original game uses a standard grid. However, while playing, I noticed that I would often second guess if my diagonal movement was correct. The dot grid should make movement decisions more intuitive.
+</Note>
+
+### The Outer Walls
+
+Now I need to create a boundary for the character to move around the grid.
+
+#### Define the Wall Percentage
+
+I'm going to set the wall percentage to 10% of the inner grid. Setting it to a variable will make it easier to add some variation to the playtests.
+
+```tsx
+const WALL_PERCENTAGE = 0.1;
+```
+
+#### Simple Wall Icon
+
+Another very simple tailwind class to style the wall icon:
+
+```tsx
+const WallIcon: React.FC = () => (
+  <div className="w-8 h-8 bg-gray-300" />
+);
+```
+
+<img
+  src={wallImage.src}
+  alt="Wall icon"
+  className="w-16 h-16 border border-gray-200 rounded-lg"
+/>
+
+#### Placing the Outer Walls
+
+I'm using a simple function to place the outer walls. Simply looping through the grid and checking if the cell is at the boundaries of the grid.
+
+```tsx
+const placeOuterWalls = (grid: GridCell[][], gridSize: number): GridCell[][] => {
+  const newGrid = [...grid.map(row => [...row])];
+
+  for (let row = 0; row < gridSize; row++) {
+    for (let col = 0; col < gridSize; col++) {
+      if (isWallCell(row, col, gridSize)) {
+        newGrid[row][col] = { type: 'wall' };
+      }
+    }
+  }
+
+  return newGrid;
+};
+
+```
+
+#### Adding the outer walls to the board.
+
+```tsx
+const initializeGrid = (): GridCell[][] => {
+  // ...
+  grid = placeOuterWalls(grid, GRID_SIZE);
+  // ...
+};
+
+const Board: React.FC = () => {
+  // ...
+  {cell.type === 'wall' && <WallIcon />}
+  // ...
+};
+```
+
+#### Result
+
+<img
+  src={outerWallsImage.src}
+  alt="Grid with outer walls"
+  className="my-4 border border-gray-200 rounded-lg"
+/>
+
+### Generate Inner Walls
+
+#### Define the Inner Wall Percentage
+
+I want to set how much of the inner grid should be blocked off from player movement. So I'm going to set a percentage of the inner grid that should be blocked off.
+
+```tsx
+const WALL_PERCENTAGE = 0.1;
+```
+
+#### Reuse the Wall Icon
+
+<img
+  src={wallImage.src}
+  alt="Wall icon"
+  className="w-16 h-16 border border-gray-200 rounded-lg"
+/>
+
+#### Placing the Inner Walls
+
+Since the outer walls are already in place, I can just grab the number of inner cells and multiply it by the wall percentage. Then randomly place the walls in the inner grid.
+
+```tsx
+const placeInnerWalls = (grid: GridCell[][], gridSize: number): GridCell[][] => {
+  const newGrid = [...grid.map(row => [...row.map(cell => ({...cell}))])];
+
+  const innerCells = (gridSize - 2) * (gridSize - 2);
+  const wallsToAdd = Math.floor(innerCells * WALL_PERCENTAGE);
+
+  let wallsAdded = 0;
+  while (wallsAdded < wallsToAdd) {
+    const row = Math.floor(Math.random() * (gridSize - 2)) + 1;
+    const col = Math.floor(Math.random() * (gridSize - 2)) + 1;
+
+    if (newGrid[row][col].type === 'empty') {
+      newGrid[row][col] = { type: 'wall' };
+      wallsAdded++;
+    }
+  }
+
+  return newGrid;
+};
+```
+
+#### Adding the inner walls to the board.
+
+```tsx
+const initializeGrid = (): GridCell[][] => {
+  // ...
+  grid = placeInnerWalls(grid, GRID_SIZE);
+  // ...
+};
+```
+
+<Note>
+No need to modify the `Board` component as its already drawing the walls.
+</Note>
+
+#### Result
+
+<img
+  src={innerWallsImage.src}
+  alt="Grid with inner walls placed"
+  className="border border-gray-200 rounded-lg"
+/>
+
+The inner walls feel too random. Good enough for now, but I'll likely come back to this and refactor it to feel more natural. I'm curious if the [Spelunky (Boss Fight Books)](https://www.amazon.com/Spelunky-Boss-Fight-Books-Derek/dp/1940535115) book discusses this...
+
+### The Coins
+
+Coins are used to buy items from the shop that randomly spawns between levels. I don't plan on adding a shop now as I'm focusing on the core gameplay loop.
+
+#### Define the Coin Count
+
+I'm going to start with 5 coins per level to see how it feels.
+
+```tsx
+const COIN_COUNT = 5;
+```
+
+#### Coin Icon
+
+I'm using a simple tailwind class to style the coin icon:
+
+```tsx
+const CoinIcon: React.FC = () => (
+  <div className="w-5 h-5 rounded-full bg-gray-300 flex items-center justify-center">
+    <span className="text-xs font-bold text-white">C</span>
+  </div>
+);
+```
+
+<img
+  src={coinImage.src}
+  alt="Coin icon"
+  className="w-16 h-16 border border-gray-200 rounded-lg"
+/>
+
+#### Placing the Coins
+
+Coins are a bit more complex than walls. They need to be placed in a way that they are not too close to each other. However, I think roughly the same logic can be applied to generate coins.
+
+```tsx
+const placeRandomCoins = (grid: GridCell[][], gridSize: number): GridCell[][] => {
+  let coinsPlaced = 0;
+  const newGrid = [...grid.map(row => [...row])];
+
+  while (coinsPlaced < COIN_COUNT) {
+    const row = Math.floor(Math.random() * gridSize);
+    const col = Math.floor(Math.random() * gridSize);
+
+    if (newGrid[row][col].type === 'empty') {
+      newGrid[row][col] = { type: 'coin' };
+      coinsPlaced++;
+    }
+  }
+
+  return newGrid;
+};
+```
+
+```tsx
+const initializeGrid = (): GridCell[][] => {
+  // ...
+  grid = placeRandomCoins(grid, GRID_SIZE);
+  // ...
+};
+
+const Board: React.FC = () => {
+  // ...
+  {cell.type === 'coin' && <CoinIcon />}
+  // ...
+};
+```
+
+#### Result
+
+<img
+  src={withCoinsImage.src}
+  alt="Grid with coins placed"
+  className="border border-gray-200 rounded-lg"
+/>
+
+### Generate Enemies
+
+I think its a good time to add some adversaries to the game. An enemy has either a number of attacks (HP reduction) or a question mark. If it's a question mark, the player has to roll a die to see how many attacks they take.
+
+#### Define the Enemy Count
+
+I'm curious how the original game handles the total number of enemies.  I'm going to start with 10 enemies per level to see how it feels.
+
+```tsx
+const ENEMY_COUNT = 10;
+```
+
+#### Enemy Icon
+
+In the interest of keeping things simple, I'm using a simple tailwind class to style the enemy icon. After a few attempts, I settled on a design that could represent an attack.
+
+<img
+  src={enemyImage.src}
+  alt="Enemy icon"
+  className="w-16 h-16 border border-gray-200 rounded-lg"
+/>
+
+The enemy icon is made up of a diamond shape and spikes. The spikes are made up of small rotated squares. The value (number of attacks or question mark) is centered inside the icon.
+
+```tsx
+const EnemyIcon = ({ value }) => (
+  <div className="w-5 h-5 relative flex items-center justify-center rotate-45">
+    {/* Main diamond shape */}
+    <div className="w-4 h-4 bg-gray-300 absolute transform" />
+    {/* Spikes - using small rotated squares */}
+    <div className="w-1.5 h-1.5 bg-gray-300 absolute transform rotate-45 -top-[0.03rem]" />
+    <div className="w-1.5 h-1.5 bg-gray-300 absolute transform rotate-45 -bottom-[0.03rem]" />
+    <div className="w-1.5 h-1.5 bg-gray-300 absolute transform rotate-45 -left-[0.03rem]" />
+    <div className="w-1.5 h-1.5 bg-gray-300 absolute transform rotate-45 -right-[0.03rem]" />
+    {/* Number centered inside */}
+    <span className="text-xs font-bold text-white relative z-10 -rotate-45">{value}</span>
+  </div>
+);
+```
+
+#### Generating the Enemies
+
+Placement is similar to the coins. I'm just going to randomly place the enemies in the grid.
+
+```tsx
+const placeRandomEnemies = (grid: GridCell[][], gridSize: number): GridCell[][] => {
+  // ...
+  newGrid[row][col] = { type: 'enemy', value: Math.floor(Math.random() * 3) + 1 };
+  // ...
+};
+```
+
+#### Adding the Enemies to the Board
+
+```tsx
+const initializeGrid = (): GridCell[][] => {
+  // ...
+  grid = placeRandomEnemies(grid, GRID_SIZE);
+  // ...
+};
+
+const Board: React.FC = () => {
+  // ...
+  {cell.type === 'enemy' && <EnemyIcon value={cell.value} />}
+  // ...
+};
+```
+
+#### Result
+
+<img
+  src={withEnemiesImage.src}
+  alt="Grid with enemies placed"
+  className="border border-gray-200 rounded-lg"
+/>
+
+### Health
+
+Health is used to heal the player. Enemies dont cause too much damage, so the hearts should reflect this.
+
+#### Define the Health Count
+
+I'll arbitarily start with 5 health items per level.
+
+```tsx
+const HEALTH_COUNT = 5;
+```
+
+#### Health Icon
+
+Original game uses a heart icon. But after a few attempts, I settled on a simple design that could keep development moving along. I don't want to spend too much time on any one thing as this is basically a prototype.
+
+```tsx
+const HealthIcon: React.FC<HealthIconProps> = ({ value }) => (
+  <div className="w-6 h-6 relative">
+    <div className="w-6 h-6 relative">
+      {/* Top left */}
+      <div className="absolute top-1/2 left-0 w-6 h-2 bg-gray-300 transform -translate-y-1/2" />
+      {/* Top right */}
+      <div className="absolute left-1/2 top-0 w-2 h-6 bg-gray-300 transform -translate-x-1/2" />
+      {/* Bottom right */}
+      <div className="absolute bottom-1/2 right-0 w-6 h-2 bg-gray-300 transform -translate-y-1/2" />
+      {/* Bottom left */}
+      <div className="absolute right-1/2 bottom-0 w-2 h-6 bg-gray-300 transform -translate-x-1/2" />
+      {/* Center */}
+      <div className="absolute inset-0 flex items-center justify-center">
+        <span className="text-xs font-bold text-white">
+          {value === 0 ? '?' : value}
+        </span>
+      </div>
+    </div>
+  </div>
+);
+```
+
+<img
+  src={healthImage.src}
+  alt="Health icon"
+  className="w-16 h-16 border border-gray-200 rounded-lg"
+/>
+
+#### Placing the Health
+
+This section is getting fairly repetitive. I won't be adding it to the dev log moving forward unless I have something to show.
+
+This should be a clear indication that I need to refactor this type of code.
+
+#### Result
+
+<img src={withHealthImage.src} alt="Grid with health placed" className="border border-gray-200 rounded-lg" />
+
+### The Traps
+
+The trap will stop the player from moving forward during their turn. It will also cause the player to drop a single coin.
+
+#### Define the Trap Count
+
+I'll start with 5 traps per level.
+
+```tsx
+const TRAP_COUNT = 5;
+```
+
+#### Trap Icon
+
+More tailwind magic.
+
+```tsx
+const TrapIcon = () => (
+  <div className="w-5 h-5 relative flex items-center justify-center">
+    {/* Base diamond shape */}
+    <div className="w-4 h-4 border-2 border-gray-300 rotate-45 absolute" />
+    {/* Crosshair */}
+    <div className="absolute w-3 h-0.5 bg-gray-300" />
+    <div className="absolute w-0.5 h-3 bg-gray-300" />
+    {/* Small circle in center */}
+    <div className="absolute w-1 h-1 rounded-full bg-gray-300" />
+  </div>
+);
+```
+
+<img
+  src={trapImage.src}
+  alt="Trap icon"
+  className="w-16 h-16 border border-gray-200 rounded-lg"
+/>
+
+I'm not crazy about the design. It has potential, but I think it could be improved.
+
+#### Result
+
+<img
+  src={withTrapsImage.src}
+  alt="Grid with traps placed"
+  className="border border-gray-200 rounded-lg"
+/>
+
+### The Teleporters
+
+If the player falls into a teleporter, they will be teleported to the (only) other teleporter.
+
+#### Define the Teleporter Count
+
+I'll start with 2 teleporters per level.
+
+```tsx
+const TELEPORTER_COUNT = 2;
+```
+
+#### Teleporter Icon
+
+More tailwind magic.
+
+<img
+  src={teleportImage.src}
+  alt="Teleporter icon"
+  className="w-16 h-16 border border-gray-200 rounded-lg"
+/>
+
+#### Placing the Teleporters
+
+To place the teleporters, I'm just going to randomly place them in the grid. It's not impossible that they could be placed next to each other, but I'm curious to see how/if it affects gameplay.
+
+```tsx
+const placeRandomTeleporters = (grid: GridCell[][], gridSize: number): GridCell[][] => {
+  // ...
+
+  // If I don't have enough cells, return the original grid
+  if (availableCells.length < 2) return newGrid;
+
+  // Place first teleporter
+  const firstIndex = Math.floor(Math.random() * availableCells.length);
+  const [row1, col1] = availableCells[firstIndex];
+  availableCells.splice(firstIndex, 1);
+
+  // Place second teleporter
+  const secondIndex = Math.floor(Math.random() * availableCells.length);
+  const [row2, col2] = availableCells[secondIndex];
+
+  // Place the teleporters
+  newGrid[row1][col1] = { type: 'teleporter' };
+  newGrid[row2][col2] = { type: 'teleporter' };
+
+  return newGrid;
+};
+```
+
+#### Result
+
+<img
+  src={withTeleportImage.src}
+  alt="Grid with teleporters placed"
+  className="border border-gray-200 rounded-lg"
+/>
+
+### Generate Treasure
+
+A treasure chest will allow the player to collect roll a single die to determine how many coins they collect.
+
+#### Define the Treasure Count
+
+I'll start with 2 treasures per level.
+
+```tsx
+const TREASURE_COUNT = 2;
+```
+
+#### Treasure Icon
+
+The treasure icon is a bit more complex than the others. It has a chest, a lid, and a lock. I'm loving how this one turned out. I'ts very clearly a treasure chest, while not being too detailed.
+
+```tsx
+const TreasureIcon: React.FC = () => (
+  <div className="w-6 h-6 relative flex items-center justify-center">
+    {/* Chest base */}
+    <div className="w-5 h-3.5 bg-gray-300 absolute bottom-0.5 rounded-sm" />
+
+    {/* Chest lid */}
+    <div className="w-5 h-2.5 bg-gray-300 absolute top-0.5 rounded-t-sm" />
+
+    {/* Decorative lines on lid */}
+    <div className="w-5 h-0.5 bg-white absolute top-1.5" />
+
+    {/* Lock plate */}
+    <div className="w-2 h-2 bg-white absolute" style={{ top: '6px' }} />
+
+    {/* Lock keyhole */}
+    <div className="w-1 h-1 bg-gray-300 absolute" style={{ top: '7px' }} />
+  </div>
+);
+```
+
+<img
+  src={treasureImage.src}
+  alt="Treasure icon"
+  className="w-16 h-16 border border-gray-200 rounded-lg"
+/>
+
+#### Result
+
+<img
+  src={withTreasureImage.src}
+  alt="Grid with treasures placed"
+  className="border border-gray-200 rounded-lg"
+/>
+
+### The Character
+
+Getting close to the end!
+
+I need to add a character to the grid. The character will start in a semi-random position on the board. However, it will not be able to start in a position that is next to a wall. I'd like the first move to be open to all directions.
+
+#### Player Icon
+
+I don't want to spend too much time on this. I'm just going to create an eyeball icon to represent the player.
+
+```tsx
+const CharacterIcon: React.FC = () => (
+  <div className="w-6 h-6 relative flex items-center justify-center">
+    {/* Character eye */}
+    <div className="w-4 h-4 rounded-full border-2 border-gray-300" />
+    {/* Character pupil */}
+    <div className="w-1 h-1 rounded-full bg-gray-300 absolute" />
+  </div>
+);
+```
+
+<img
+  src={characterImage.src}
+  alt="Character icon"
+  className="w-16 h-16 border border-gray-200 rounded-lg"
+/>
+
+#### Placing the Character
+
+```tsx
+const placeCharacter = (grid: GridCell[][], gridSize: number): GridCell[][] => {
+  const newGrid = [...grid.map(row => [...row.map(cell => ({...cell}))])];
+
+  // Collect all valid positions (not against walls and not occupied)
+  const validPositions: [number, number][] = [];
+
+  for (let row = 1; row < gridSize - 1; row++) {
+    for (let col = 1; col < gridSize - 1; col++) {
+      // Check if the cell and all adjacent cells are not walls
+      const hasAdjacentWall = (
+        newGrid[row-1][col].type === 'wall' ||
+        newGrid[row+1][col].type === 'wall' ||
+        newGrid[row][col-1].type === 'wall' ||
+        newGrid[row][col+1].type === 'wall'
+      );
+
+      if (newGrid[row][col].type === 'empty' &&
+          !hasAdjacentWall) {
+        validPositions.push([row, col]);
+      }
+    }
+  }
+
+  // If I found valid positions, randomly select one
+  if (validPositions.length > 0) {
+    const randomIndex = Math.floor(Math.random() * validPositions.length);
+    const [row, col] = validPositions[randomIndex];
+    newGrid[row][col] = { type: 'character' };
+  }
+
+  return newGrid;
+};
+```
+
+#### Result
+
+<img
+  src={withCharacterImage.src}
+  alt="Grid with character placed"
+  className="border border-gray-200 rounded-lg"
+/>
+
+### The Exit
+
+Finally, I need to add the exit to the grid. The exit will be the only exit from the current dungeon floor. It shouldb be placed in a random empty cell.
+
+#### Exit Icon
+
+I decided to replicate the stairs icon from the original game. The absolute positioning is a bit of a pain, but I like the end result.
+
+```tsx
+const StairsIcon: React.FC = () => (
+  <div className="w-5 h-9 relative">
+    <div className="absolute bottom-0 left-0 w-5 h-3 border-t-2 border-gray-300" />
+    <div className="absolute bottom-0.5 left-0 w-5 h-3 border-t-2 border-gray-300" />
+    <div className="absolute bottom-1 left-0 w-3.5 h-3 border-t-2 border-gray-300" />
+    <div className="absolute bottom-1.5 left-0 w-3.5 h-3 border-t-2 border-gray-300" />
+    <div className="absolute bottom-2 left-0 w-2 h-3 border-t-2 border-gray-300" />
+    <div className="absolute bottom-2.5 left-0 w-2 h-3 border-t-2 border-gray-300" />
+    <div className="absolute bottom-3 left-0 w-1 h-3 border-t-2 border-gray-300" />
+    <div className="absolute bottom-3.5 left-0 w-1 h-3 border-t-2 border-gray-300" />
+  </div>
+);
+```
+
+<img
+  src={exitImage.src}
+  alt="Exit icon"
+  className="w-16 h-16 border border-gray-200 rounded-lg"
+/>
+
+#### Result
+
+<img
+  src={withExitImage.src}
+  alt="Grid with exit placed"
+  className="border border-gray-200 rounded-lg"
+/>
+
+## Play Testing
+
+Some thoughts I had while playing the first draft of the dungeon level generator:
+
+- If the grid size is increased or decreased, to what extent does it affect gameplay?
+- If the number of each item is increased or decreased, to what extent does it affect gameplay?
+- Could I add a second player? Possibly, but I think it would be too difficult to balance. The boardsize would need to be increased.. but not sure by how much.
+- The portals can be sitting next to each other.
+- It feels a bit too easy to avoid baddies and collect items. Could there be more limitations on the player's movement?
+
+## Conclusion
+
+The original is clearly more refined than this quick prototype. I think the game is fun and I'm happy with the way it looks. I'm going to continue to play test it and see how it feels. The prototype is by no means DRY, so I may clean it up a bit before iterating on some ideas.
+
+## Next Steps
+
+- Add ability to see the grid. May help with debugging.
+- Refactor the code to be more readable & maintainable.
+- Make the equivalent of a "level editor" for a random dungeon generator.
+
+<Media image={dungeonImage.src}>
+  <strong>Note:</strong>
+  This is my breakdown of the <a href="https://gladdendesign.com/products/paper-apps-dungeon">Paper Apps Dungeon</a> by <a href="https://gladdendesign.com">Gladden</a>. If you like this, please go [buy the original game](https://gladdendesign.com/products/paper-apps-dungeon)!
+</Media>

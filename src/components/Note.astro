@@ -1,0 +1,13 @@
+---
+interface Props {
+  content: string;
+}
+
+const { content } = Astro.props;
+---
+
+<div class="my-6 p-4 border-l-4 border-blue-500 bg-blue-50 dark:bg-blue-900/20">
+  <div class="prose dark:prose-invert max-w-none">
+    <slot />
+  </div>
+</div> 

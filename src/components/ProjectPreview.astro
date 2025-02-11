@@ -1,0 +1,97 @@
+---
+const { project, class: className, headingLevel = 'h2' } = Astro.props;
+const HeadingTag = headingLevel;
+
+// Extract year from publishDate
+const year = project.data.publishDate.getFullYear();
+---
+
+<div class:list={[className, "group relative overflow-hidden rounded-lg bg-white shadow-md hover:shadow-lg transition-all"]}>
+  <div class="relative aspect-[3/2] w-full overflow-hidden">
+    <img 
+       src={project.data.image ?? "https://placehold.co/600x400"}
+       alt={project.data.title}
+       class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+       />
+       <div class="absolute right-4 top-4 rounded-lg bg-white/90 px-3 py-2 backdrop-blur-sm">
+         <span class="font-mono text-lg font-bold text-gray-900">{year}</span>
+       </div>
+  </div>
+
+  <div class="p-6">
+    <div class="mb-4">
+      <div class="mb-2 flex items-center gap-3">
+        <div class="flex h-8 w-8 items-center justify-center rounded-md">
+          {project.data.company.name ? (
+            <img 
+              src={project.data.company.logo ?? "https://placehold.co/100"}
+              alt={project.data.company.name}
+              class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+            />
+          ): (
+          <div class="bg-orange-50">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-500">
+              <path d="m18 16 4-4-4-4"/>
+              <path d="m6 8-4 4 4 4"/>
+              <path d="m14.5 4-5 16"/>
+            </svg>
+          </div>)
+
+          }
+        </div>
+        <div>
+          <HeadingTag class="text-lg font-bold">
+                             {project.data.title}
+          </HeadingTag>
+          <div class="flex items-center gap-2 text-sm">
+            {project.data.company.name && (
+            <>
+            <span class="text-gray-500">{project.data.company.name}</span>
+            <span class="text-gray-500">•</span>
+            </>
+            )}
+            <span class="text-gray-700">{project.data.type ?? 'Client Work'}</span>
+          </div>
+        </div>
+      </div>
+      <div class="h-px bg-gray-100" />
+      </div>
+      <p class="mb-4 text-sm text-gray-600">{project.data.description}</p>
+      <div class="flex items-center justify-between">
+        <div class="flex flex-wrap gap-1 text-xs text-gray-400">
+          {project.data.tags?.map((tag, index) => (
+          <span>{tag}{index < project.data.tags.length - 1 ? ", " : ""}</span>
+          )) ?? ""}
+        </div>
+        <div class="flex items-center gap-3">
+          {project.data.meta.github && (
+          <a 
+            href={project.data.meta.github}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-gray-500 hover:text-gray-900 transition-colors"
+            aria-label="View GitHub repository"
+            >
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+            </svg>
+          </a>
+          )}
+          {project.data.meta.website && (
+          <a 
+            href={project.data.meta.website}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-gray-500 hover:text-gray-900 transition-colors"
+            aria-label="Visit project website"
+            >
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="7" y1="17" x2="17" y2="7"></line>
+              <polyline points="7 7 17 7 17 17"></polyline>
+            </svg>
+          </a>
+          )}
+        </div>
+      </div>
+    </div>
+  </div>

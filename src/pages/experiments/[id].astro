@@ -1,0 +1,52 @@
+---
+import { type CollectionEntry, getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ExperimentPreview from '../../components/ExperimentPreview.astro';
+import { sortItemsByDateDesc } from '../../utils/data-utils';
+
+export async function getStaticPaths() {
+    const experiments = (await getCollection('experiments')).sort(sortItemsByDateDesc);
+    const experimentCount = experiments.length;
+    return experiments.map((experiment, index) => ({
+        params: { id: experiment.id },
+        props: {
+            experiment,
+            prevExperiment: index + 1 !== experimentCount ? experiments[index + 1] : null,
+            nextExperiment: index !== 0 ? experiments[index - 1] : null
+        }
+    }));
+}
+
+type Props = { 
+    experiment: CollectionEntry<'experiments'>; 
+    prevExperiment: CollectionEntry<'experiments'>; 
+    nextExperiment: CollectionEntry<'experiments'> 
+};
+
+const { experiment, prevExperiment, nextExperiment } = Astro.props;
+const { title, description, seo, publishDate: date } = experiment.data;
+const { Content } = await render(experiment);
+---
+
+<BaseLayout title={seo?.title ?? title} description={seo?.description ?? description} image={seo?.image} pageType="article" showHeader={false}>
+    <article class="mb-16 sm:mb-24">
+        <header class="mb-8">
+            <h1 class="text-3xl leading-tight font-serif font-medium sm:text-5xl sm:leading-tight">{title}</h1>
+            <time datetime={date.toISOString()} class="block mt-4 text-gray-600">
+                {date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+            </time>
+        </header>
+        <div class="max-w-none prose prose-dante sm:prose-lg">
+            <Content />
+        </div>
+    </article>
+    {
+        (prevExperiment || nextExperiment) && (
+            <div class="my-16 sm:my-24">
+                <h2 class="mb-12 text-xl font-serif italic sm:mb-16 sm:text-2xl">More Experiments</h2>
+                {nextExperiment && <ExperimentPreview experiment={nextExperiment} class="mb-10 sm:mb-12" headingLevel="h3" />}
+                {prevExperiment && <ExperimentPreview experiment={prevExperiment} class="mb-10 sm:mb-12" headingLevel="h3" />}
+            </div>
+        )
+    }
+</BaseLayout>

@@ -1,0 +1,18 @@
+---
+interface Props {
+  image?: string;
+}
+
+const { image } = Astro.props;
+---
+
+<div class="flex items-center space-x-8 p-4 bg-gray-100 dark:bg-gray-800 rounded-lg">
+  {image && (
+    <div class="w-24 shrink-0">
+      <img src={image} alt="" class="object-cover rounded w-full" />
+    </div>
+  )}
+  <div>
+    <slot />
+  </div>
+</div>
