@@ -6,8 +6,7 @@ seo:
     src: '/post-1.jpg'
     alt: A person standing at the window
 title: 'Chaining in Underscore.js'
-description: 'The Underscore library gives you a choice of programming style: functional VS. chaining. Under the right circumstances, I think chaining can lead to more readable code.'
-excerpt: In recent years, the way we work has undergone a significant transformation, largely due to advancements in technology and changing attitudes toward work-life balance. One of the most notable changes has been the rise of remote work, allowing employees to work from the comfort of their own homes.
+excerpt: 'Underscore.js gives you a choice of programming style: functional VS. chaining. Under the right circumstances, I think chaining can lead to more readable code.'
 publishDate: 2012-09-13
 author: 'Simon W. Jackson'
 ---
@@ -17,7 +16,7 @@ The Underscore library gives you a choice of programming style: functional VS. c
 To demonstrate, lets clean up a very ‘dirty’ array using the two methods in Underscore.js Here is the array we will be working with:
 
 ```js
-let lottery = [  
+let lottery = [
   1,  2, 3,
   '',  1,  4,
   null,  [
@@ -28,15 +27,14 @@ let lottery = [
   33,  55,  3204,  463
 ];
 ```
-    
 
 ## The "Functional" Way
 
 ```js
-let unique = _.uniq(flattened);  
+let unique = _.uniq(flattened);
 let compacted = _.compact(unique);
 
-let result = compacted;  
+let result = compacted;
 ```
 
 This is how most beginners will approach this problem (with or without the help of underscore). Notice how we have to declare many variables that will only be used once, and the subsequent line must contain the variable created in the previous line passed in as an argument.
@@ -48,7 +46,7 @@ Lets try to rewrite this using the cleaner, chainable approach.
 ## The "Chainable" way
 
 ```js
-let result = _.chain(lottery)  
+let result = _.chain(lottery)
   .flatten()
   .uniq()
   .compact()

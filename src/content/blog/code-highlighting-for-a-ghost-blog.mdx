@@ -2,7 +2,7 @@
 author: Simon W. Jackson
 publishDate: 2016-09-12
 title: Code highlighting for a ghost blog
-description: I've been loving my fresh install of the ghost blogging platform. It has a clean interface with a very small feature set. However, it lacks builtin syntax highlighting (for good reason).
+excerpt: I've been loving my fresh install of the ghost blogging platform. It has a clean interface with a very small feature set. However, it lacks builtin syntax highlighting (for good reason).
 ---
 
 I've been loving my fresh install of the [ghost blogging platform](http://ghost.org/). It has a clean interface with a very small feature set. However, it lacks builtin syntax highlighting ([for good reason](https://en.wikipedia.org/wiki/KISS_principle)).
@@ -20,7 +20,7 @@ First, lets choose the appropriate style (colors) that we want to use. You can c
 We will need to include the highlight.js stylesheet at the top of the header section. I am slightly partial to atoms dark mode colors, so that's the one we will use for this example.
 
 ```html
-<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.6.0/styles/atom-one-dark.min.css">  
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.6.0/styles/atom-one-dark.min.css">
 ```
 
 Next, lets override the default ghost styles for code blocks. If we don't do this, we might end up with some extra styles that may not flow nicely with the styles we are adding.
@@ -35,7 +35,7 @@ pre {
 .post-content pre > code {
     padding: 2em;
 }
-```    
+```
 
 _I added some thick padding to the code blocks. This is completely optional, but I think this helps put more focus on the code_
 
@@ -46,8 +46,8 @@ _I added some thick padding to the code blocks. This is completely optional, but
 Now we can inject the highlight.js payload and initialize it.
 
 ```html
-<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.6.0/highlight.min.js"></script>  
-<script>hljs.initHighlightingOnLoad();</script>  
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.6.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
 ```
-    
+
 That's it, your blog just got a bit sexier!

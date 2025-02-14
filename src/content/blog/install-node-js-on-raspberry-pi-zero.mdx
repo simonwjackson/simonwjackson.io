@@ -2,7 +2,7 @@
 author: Simon W. Jackson
 publishDate: 2019-09-13
 title: Installing nodejs on a Raspberry Pi Zero
-description: I recently switched one of my projects from a Raspberry Pi 3 over to a Raspberry Pi Zero. Since they both run _very_ similar hardware, I was able to just pop out the sdcard from the Rpi 3 and just insert it into the zero and voilà everything just worked.. or so I thought.
+excerpt: I recently switched one of my projects from a Raspberry Pi 3 over to a Raspberry Pi Zero. Since they both run _very_ similar hardware, I was able to just pop out the sdcard from the Rpi 3 and just insert it into the zero and voilà everything just worked.. or so I thought.
 ---
 
 I recently switched one of my projects from a [Raspberry Pi 3](https://www.amazon.com/Raspberry-Pi-RASP-PI-3-Model-Motherboard/dp/B01CD5VC92?tag=miniarray-20) over to a [Raspberry Pi Zero](https://www.amazon.com/Raspberry-Pi-RASP-PI-3-Model-Motherboard/dp/B01CD5VC92?tag=miniarray-20). Since they both run _very_ similar hardware, I was able to just pop out the sdcard from the Rpi 3 and just insert it into the zero and _Voilà_ everything just worked.. or so I thought.
@@ -25,19 +25,19 @@ Now, extract it to the `/usr/local` directory
 ```bash
 $ cd /usr/local
 $ sudo tar xzvf ~/node-v4.2.4-linux-armv6l.tar.gz --strip=1
-```    
+```
 
 Finally, (if you haven't already) remove the nodejs debian package
 
 ```bash
 $ sudo apt-get remove --purge npm node nodejs
 ```
-    
+
 Now we can verify that everything is good to go:
 
 ```bash
 $ node -v
-v4.2.4  
+v4.2.4
 ```
 
 ## Optional (but highly recommended)
@@ -46,7 +46,7 @@ This install method comes with npm version 2.x which is known for slow installs 
 
 ```bash
 $ sudo npm install -g npm
-```    
+```
 
 So meta.
 

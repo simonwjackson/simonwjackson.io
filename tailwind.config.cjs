@@ -75,6 +75,9 @@ module.exports = {
                         '.prose blockquote p:first-of-type::after': {
                             content: 'none'
                         },
+                        '.prose :where(blockquote p):not(:where([class~="not-prose"], [class~="not-prose"] *))': {
+                            paddingLeft: '1rem'
+                        },
                         blockquote: {
                             border: 0,
                             borderLeft: `4px solid ${theme('borderColor.main / 40%')}`,
@@ -89,6 +92,14 @@ module.exports = {
                                 fontSize: '1em',
                                 lineHeight: '1.6'
                             }
+                        },
+                        blockquote: {
+                            paddingLeft: 0,
+                            // paddingTop: theme('spacing.1'),
+                            // paddingBottom: theme('spacing.1'),
+                            paddingRight: theme('spacing.1'),
+                            // backgroundColor: theme('colors.gray.50'),
+                            borderInlineStartColor: theme('colors.gray.400')
                         },
                         'blockquote p': {
                             paddingLeft: '1rem'
