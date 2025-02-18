@@ -10,7 +10,7 @@ import { sortItemsByDateDesc } from '../../utils/data-utils';
 
 export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
   const posts = (await getCollection('blog'))
-    .filter((post) => !post.data.isDraft)
+    .filter((post) => import.meta.env.DEV || !post.data.isDraft)
     .sort(sortItemsByDateDesc);
 
   return paginate(posts, { pageSize: siteConfig.postsPerPage || 4 });
