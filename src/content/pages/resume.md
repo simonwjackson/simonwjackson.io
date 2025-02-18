@@ -36,7 +36,7 @@ seo:
   </div>
   <div class="mb-10">
     <div class="flex justify-between items-baseline">
-      <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-100">Lead UI Developer - Digital Display Systems</h3>
+      <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-100">Lead UI Developer<br/>Digital Display Systems</h3>
       <span class="text-gray-500 dark:text-gray-400">May 2022 - Jun 2023</span>
     </div>
     <span class="font-medium text-gray-600 dark:text-gray-300">Grocery TV</span>
