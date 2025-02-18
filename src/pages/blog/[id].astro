@@ -9,14 +9,18 @@ import { sortItemsByDateDesc } from '../../utils/data-utils';
 import { slugify } from '../../utils/common-utils';
 
 export async function getStaticPaths() {
-    const posts = (await getCollection('blog')).sort(sortItemsByDateDesc);
+    const allPosts = await getCollection('blog');
+    const posts = allPosts
+        .filter((post) => !post.data.isDraft)
+        .sort(sortItemsByDateDesc);
+
     const postCount = posts.length;
     return posts.map((post, index) => ({
         params: { id: post.id },
         props: {
             post,
-            prevPost: index + 1 !== postCount ? posts[index + 1] : null,
-            nextPost: index !== 0 ? posts[index - 1] : null
+            prevPost: index + 1 < postCount ? posts[index + 1] : null,
+            nextPost: index > 0 ? posts[index - 1] : null
         }
     }));
 }
