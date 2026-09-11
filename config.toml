@@ -48,7 +48,7 @@ motto_mode = "multi"
 mottos = [
     "Building tools that make design and engineering talk.",
     "Design systems, prototypes, and the glue between them.",
-    "Ten years of shipping UI for Hilton, Dell, and Domino."
+    "Shipping UI for Amaze, Hilton, Dell, and Domino since 2007."
 ]
 
 home_recent_posts = 5

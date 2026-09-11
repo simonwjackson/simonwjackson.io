@@ -5,13 +5,16 @@ template = "about.html"
 
 ## Hello, I'm Simon
 
-I am a UI developer and design engineer. Since 2007, I have built front ends and design systems for companies including Hilton, Grocery TV, Bottomline Technologies, Lumenalta, and Dell. At Dell, I built a specialized text editor that allowed designers to prototype voice interactions for gaming applications, contributing to patent US20200227034A1.
+I am a UI developer and design engineer. Since 2007, I have built front ends and design systems for companies including Amaze Insights, Hilton, Grocery TV, Bottomline Technologies, Lumenalta, and Dell. At Dell, I built a specialized text editor that allowed designers to prototype voice interactions for gaming applications, contributing to patent US20200227034A1.
 
 Most of my work sits between designers and engineers: design systems, component libraries, prototyping tools, and the tooling that keeps them in sync.
 
 ---
 
 ### Experience
+
+- **Design Engineer** at Amaze Insights (2025–present)  
+  Primary engineer on Amaze Incentives, a product that replaces the Excel spreadsheets hotels use to run sales compensation: goal plan templates, participant roles, payout tiers, approval workflows, and payout certificates. Led the rebuild of the Amaze platform into a single multi-product codebase on Effect, with a shared design system and brand specification, a repo CLI, Storybook, and Playwright coverage. Currently researching an AI-native direction for the Insights product: six user personas and 45 jobs-to-be-done drawn from recorded customer sessions, 34 Tableau workbooks unpacked into readable documentation, and 34 million rows of report data made queryable with SQL.
 
 - **Senior UI Developer** at Hilton (2023–2025)  
   Shipped booking flow features across 18 brands and 7,000+ properties. Ran A/B tests on room upgrades, checkout, and rewards enrollment. Built micro-animated components for the 2024 Hilton hackathon.
