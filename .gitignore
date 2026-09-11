@@ -1,5 +1,6 @@
 # Zola build output
 /public/
+/zola
 
 # Environment
 .env
