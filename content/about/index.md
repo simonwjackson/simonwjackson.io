@@ -5,36 +5,56 @@ template = "about.html"
 
 ## Hello, I'm Simon
 
-I am a Creative Technologist and Senior UI Developer based in Austin, Texas. Over the past decade, I have built digital experiences for companies including Hilton, Grocery TV, Domino.com, and Dell. At Dell, I contributed to a patented voice command integration system.
+I am a UI developer and design engineer. Since 2007, I have built front ends and design systems for companies including Hilton, Grocery TV, Bottomline Technologies, Lumenalta, and Dell. At Dell, I built a specialized text editor that allowed designers to prototype voice interactions for gaming applications, contributing to patent US20200227034A1.
 
-I focus on building tools that connect design and engineering workflows, delivering software that improves team productivity and user experience.
+Most of my work sits between designers and engineers: design systems, component libraries, prototyping tools, and the tooling that keeps them in sync.
 
 ---
 
 ### Experience
 
-- **Senior UI Developer** at Hilton (2023–2025)
-  Refined booking flow architecture across Hilton's portfolio of 18 brands and 7,000+ properties. Designed micro-animated UI components and ran A/B testing programs to optimize guest checkout.
+- **Senior UI Developer** at Hilton (2023–2025)  
+  Shipped booking flow features across 18 brands and 7,000+ properties. Ran A/B tests on room upgrades, checkout, and rewards enrollment. Built micro-animated components for the 2024 Hilton hackathon.
 
-- **Lead UI Developer, Digital Display Systems** at Grocery TV (2022–2023)
-  Prototyped and built digital display systems deployed across 22,000 locations. Automated video campaign production pipelines, cutting rendering turnaround by 50%.
+- **Lead UI Developer, Digital Display Systems** at Grocery TV (2022–2023)  
+  Prototyped a React Native retail display application that evolved into a system running in 22,000 stores. Built automation for the Texas State Lottery campaign that halved video production turnaround.
 
-- **Senior Frontend Engineer** (2012–2022)
-  Delivered design systems, component libraries, and interactive web applications using modern web standards.
+- **Senior UI Developer** at Kronologic (2021–2022)  
+  Built core components for the internal design system and developed an instant show/hide toggle system for rapid feature testing. Spearheaded end-to-end testing coverage across the platform.
+
+- **UI Developer** at Bottomline Technologies (2018–2021)  
+  Developed a data visualization component library for financial applications. Led the conversion of legacy financial UI to React with TypeScript and GraphQL.
+
+- **Creative Technologist** at Dell (2016–2018)  
+  Contributed to component architecture in the Dell Clarity design system, helping merge VMware and Dell component libraries. Built voice interaction prototyping tools for UX research.
+
+- **UI Developer** at Lumenalta (2013–2016)  
+  Maintained the domino.com component library using atomic design principles, and built cross-client HTML email templates.
+
+- **Web Developer** at New Media One (2007–2012)  
+  Built and maintained client web applications and managed production deployments.
+
+---
+
+### Patents
+
+- **US20200227034A1** (Dell)  
+  Systems and Methods for Selectively Activating and Interacting with a Speech Recognition Service During Application Runtime Without Interrupting Execution of the Application.
 
 ---
 
 ### Resume
 
-Download my full resume:
+Full resume:
 
-- [Download Resume (PDF)](/simon-w-jackson-creative-technologist-resume.pdf)
-- [Download Resume (DOCX)](/simon-w-jackson-creative-technologist-resume.docx)
+- [PDF](/simon-w-jackson-creative-technologist-resume.pdf)
+- [DOCX](/simon-w-jackson-creative-technologist-resume.docx)
 
 ---
 
 ### Connect
 
+- [Email: hello@simonwjackson.io](mailto:hello@simonwjackson.io)
 - [GitHub](https://github.com/simonwjackson)
 - [LinkedIn](https://www.linkedin.com/in/simonwjackson)
 - [Bluesky](https://bsky.app/profile/simonwjackson.bsky.social)

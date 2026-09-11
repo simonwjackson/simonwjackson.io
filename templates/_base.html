@@ -1,0 +1,175 @@
+{% set taxonomy_mode = config.extra.taxonomy_mode | default(value="tags") %}
+{% set taxonomy_section_enabled = config.extra.sections.tags | default(value=true) %}
+{{<validate_taxonomy_mode taxonomy_mode={taxonomy_mode}/>}}
+<!doctype html>
+<html lang="{{ lang }}">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{{ config.title }}{% endblock title %}</title>
+
+  {% block feed_link %}
+  {% if config.generate_feeds %}
+  {% for filename in config.feed_filenames %}
+  {% if filename == "atom.xml" %}
+  <link rel="alternate" type="application/atom+xml" title="{{ config.title }}" href="{{ get_url(path=filename, lang=lang) }}">
+  {% elif filename == "rss.xml" %}
+  <link rel="alternate" type="application/rss+xml" title="{{ config.title }}" href="{{ get_url(path=filename, lang=lang) }}">
+  {% endif %}
+  {% endfor %}
+  {% endif %}
+  {% endblock feed_link %}
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Fira+Code:wght@400;700&family=Noto+Sans+SC:wght@100..900&family=Noto+Serif+SC:wght@200..900&family=STIX+Two+Text:ital,wght@0,400..700;1,400..700&family=Ysabeau:ital,wght@0,1..1000;1,1..1000&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chinese-fonts/lxgwwenkaibright@2.0.0/dist/LXGWBright-Regular/result.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@chinese-fonts/syst@3.0.0/dist/SourceHanSerifCN/result.css">
+  {% if config.markdown.highlighting.style == "class" %}
+  <link rel="stylesheet" href="{{ get_url(path='giallo-dark.css') }}" media="(prefers-color-scheme: dark)">
+  <link rel="stylesheet" href="{{ get_url(path='giallo-light.css') }}" media="(prefers-color-scheme: light)">
+  {% endif %}
+  <link rel="stylesheet" href="{{ get_url(path="style.css") }}">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+
+  <script>
+    (function() {
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme) {
+        document.documentElement.style.colorScheme = savedTheme;
+      }
+    })();
+  </script>
+
+
+  {% block head %}
+  {% endblock head %}
+  {% include "_topbar_script.html" %}
+</head>
+
+{% set configured_home_layout = config.extra.home_layout | default(value="focus") %}
+<body class="body-block{% if current_path == "/" and configured_home_layout == "horizontal" %} home-layout-horizontal-page{% endif %}">
+  <div id="sidebar-mask" onclick="toggleSidebar()" aria-hidden="true"></div>
+  {% if current_path != "/" %}
+  <div id="sidebar" class="">
+    <div class="logo-title">
+      <div class="title-inner">
+        {% if config.extra.avatar %}
+        <div class="avatar">
+          <img src="{{ get_url(path=config.extra.avatar) }}" alt="avatar">
+        </div>
+        {% endif %}
+        <div class="title">
+          <h3><a href="{{ get_url(path="@/_index.md", lang=lang) }}">{{ config.title }}</a></h3>
+          <div class="description">
+            <p>{{ config.description }}</p>
+          </div>
+          {% if config.extra.motto_mode and config.extra.motto_mode != "hide" %}
+            {% if config.extra.motto_mode == "single" and config.extra.motto %}
+            <p class="motto">{{ config.extra.motto }}</p>
+            {% elif config.extra.motto_mode == "multi" and config.extra.mottos %}
+            <p class="motto" data-mottos='{{ config.extra.mottos | json_encode | safe }}'></p>
+            {% endif %}
+          {% endif %}
+        </div>
+      </div>
+      <ul class="social-links">
+        {% for link in config.extra.social_links %}
+        <li>
+          <a href="{{ link.url | safe }}" aria-label="{{ link.name | title }}">
+            <i class="{{<social_icon name={link.name}/>}}"></i>
+          </a>
+        </li>
+        {% endfor %}
+      </ul>
+
+      {% if config.extra.sections.about | default(value=true) %}
+      <div class="sidebar-action">
+        <a href="{{ get_url(path="@/about/index.md", lang=lang) }}">About Me</a>
+      </div>
+      {% endif %}
+
+      <nav class="sidebar-nav">
+        <a href="{{ get_url(path="@/_index.md", lang=lang) }}">Home</a>
+
+        {% if config.extra.sections.posts | default(value=true) %}
+        <a href="{{ get_url(path="@/posts/_index.md", lang=lang) }}">Posts</a>
+        {% endif %}
+
+        {% if config.extra.sections.archive | default(value=true) %}
+        <a href="{{ get_url(path="@/archive/index.md", lang=lang) }}">Archives</a>
+        {% endif %}
+
+        {% if taxonomy_section_enabled and taxonomy_mode != "none" %}
+        <a href="{{ get_url(path="tags", lang=lang, trailing_slash=true) }}">Tags</a>
+        {% endif %}
+
+        {% if config.extra.sections.links | default(value=true) %}
+        <a href="{{ get_url(path="@/links/index.md", lang=lang) }}">Links</a>
+        {% endif %}
+      </nav>
+    </div>
+  </div>
+  {% endif %}
+
+  <div id="main">
+    {% if current_path != "/" %}
+    <div class="page-top animated fadeInDown">
+      <nav class="nav">
+        <a href="{{ get_url(path="@/_index.md", lang=lang) }}">Home</a>
+
+        {% if config.extra.sections.posts | default(value=true) %}
+        <a href="{{ get_url(path="@/posts/_index.md", lang=lang) }}" {% if current_path is starting_with(pat="/posts") %}class="active"{% endif %}>Posts</a>
+        {% endif %}
+
+        {% if config.extra.sections.about | default(value=true) %}
+        <a href="{{ get_url(path="@/about/index.md", lang=lang) }}" {% if current_path is starting_with(pat="/about") %}class="active"{% endif %}>About</a>
+        {% endif %}
+
+        {% if config.extra.sections.archive | default(value=true) %}
+        <a href="{{ get_url(path="@/archive/index.md", lang=lang) }}" {% if current_path is starting_with(pat="/archive") %}class="active"{% endif %}>Archives</a>
+        {% endif %}
+
+        {% if taxonomy_section_enabled and taxonomy_mode != "none" %}
+        <a href="{{ get_url(path="tags", lang=lang, trailing_slash=true) }}" {% if current_path is starting_with(pat="/tags") %}class="active"{% endif %}>Tags</a>
+        {% endif %}
+
+        {% if config.extra.sections.links | default(value=true) %}
+        <a href="{{ get_url(path="@/links/index.md", lang=lang) }}" {% if current_path is starting_with(pat="/links") %}class="active"{% endif %}>Links</a>
+        {% endif %}
+      </nav>
+      {% include "_topbar_controls.html" %}
+    </div>
+    {% elif config.build_search_index %}
+    <div class="page-top home-search-bar">
+      <div class="information">{% include "_search.html" %}</div>
+    </div>
+    {% endif %}
+    <div class="autopagerize_page_element">
+      <div class="content animated fadeIn {% if current_path == '/' %}home-content{% endif %}">
+        {% block content %}{% endblock content %}
+      </div>
+    </div>
+    <div class="page-footer">
+      <div class="footer-content">
+        <div class="footer-credit">With theme <a href="https://github.com/Resorie/zola-theme-nivis">Nivis</a><span class="separator">/</span>Powered by <a href="https://www.getzola.org/" target="_blank">Zola</a></div>
+        {% set copyright_holder = config.extra.footer.copyright_holder | default(value="") %}
+        {% if copyright_holder %}
+        {% set current_year = now() | date(format="%Y") %}
+        {% set copyright_since = config.extra.footer.copyright_since | default(value=0) %}
+        {% set copyright_since_text = copyright_since | str %}
+        <div class="footer-copyright">Copyright © {% if copyright_since and copyright_since_text != current_year %}{{ copyright_since }}-{{ current_year }}{% else %}{{ current_year }}{% endif %} <a href="{{ get_url(path="@/_index.md", lang=lang) }}">{{ copyright_holder }}</a></div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  {% include "_search_assets.html" %}
+  <script id="content-script" type="module" src="{{ get_url(path='content.mjs', cachebust=true) }}" data-mathjax="{{ config.extra.math_display == 'mathjax' }}"></script>
+
+  <script src="//instant.page/5.1.0" type="module" integrity="sha384-by67kQnR+pyfy8yWP4kPO12fHKRLHZPfEsiSXR8u2IKcTdxD805MGUXBzVPnkLHw"></script>
+</body>
+
+</html>

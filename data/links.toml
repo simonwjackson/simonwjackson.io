@@ -3,14 +3,14 @@ name = "Profiles"
 desc = "Where to find my work and updates"
 items = [
     { name = "GitHub", url = "https://github.com/simonwjackson", description = "Open-source software, experiments, and tools.", avatar = "https://avatars.githubusercontent.com/u/189379" },
-    { name = "LinkedIn", url = "https://www.linkedin.com/in/simonwjackson", description = "Professional career background and connections.", avatar = "/headshot.jpg" },
-    { name = "Bluesky", url = "https://bsky.app/profile/simonwjackson.bsky.social", description = "Microblogging and social updates.", avatar = "/headshot.jpg" },
-    { name = "X / Twitter", url = "https://x.com/simonwjackson", description = "Tech thoughts, quick links, and discussions.", avatar = "/headshot.jpg" }
+    { name = "LinkedIn", url = "https://www.linkedin.com/in/simonwjackson", description = "Work history.", avatar = "/headshot.jpg" },
+    { name = "Bluesky", url = "https://bsky.app/profile/simonwjackson.bsky.social", description = "Short posts and updates.", avatar = "/headshot.jpg" },
+    { name = "X / Twitter", url = "https://x.com/simonwjackson", description = "Tech thoughts and links.", avatar = "/headshot.jpg" }
 ]
 
 [[groups]]
 name = "Tools & Credits"
-desc = "Technologies powering this site"
+desc = "What this site runs on"
 items = [
     { name = "Zola", url = "https://www.getzola.org/", description = "Fast static site generator written in Rust.", avatar = "https://avatars.githubusercontent.com/u/43047029" },
     { name = "Nivis Theme", url = "https://github.com/Resorie/zola-theme-nivis", description = "Clean, responsive Zola theme created by Resory.", avatar = "https://avatars.githubusercontent.com/u/49238603" }

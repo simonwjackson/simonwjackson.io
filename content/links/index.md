@@ -3,4 +3,4 @@ title = "Links"
 template = "links.html"
 +++
 
-A collection of useful profiles, projects, and web resources.
+Where else to find me, and what this site runs on.

@@ -3,7 +3,7 @@ base_url = "https://simonwjackson.io"
 
 # The site title and description; used in feeds by default.
 title = "Simon W. Jackson"
-description = "Creative Technologist, UI Developer & Perpetual Tinkerer"
+description = "Design Engineer, Creative Technologist & Perpetual Tinkerer"
 
 # Zola's site language.
 default_language = "en"
@@ -46,14 +46,15 @@ taxonomy_mode = "tags"
 # Motto settings
 motto_mode = "multi"
 mottos = [
-    "Reimagining digital experiences. One idea at a time.",
-    "Creative Technologist & UI Developer",
-    "Code is poetry"
+    "Building tools that make design and engineering talk.",
+    "Design systems, prototypes, and the glue between them.",
+    "Ten years of shipping UI for Hilton, Dell, and Domino."
 ]
 
 home_recent_posts = 5
 
 social_links = [
+    { name = "email", url = "mailto:hello@simonwjackson.io" },
     { name = "github", url = "https://github.com/simonwjackson" },
     { name = "linkedin", url = "https://www.linkedin.com/in/simonwjackson" },
     { name = "x-twitter", url = "https://x.com/simonwjackson" },
