@@ -1,0 +1,73 @@
+# The URL the site will be built for
+base_url = "https://simonwjackson.io"
+
+# The site title and description; used in feeds by default.
+title = "Simon W. Jackson"
+description = "Creative Technologist, UI Developer & Perpetual Tinkerer"
+
+# Zola's site language.
+default_language = "en"
+
+# When set to "true", a feed is automatically generated.
+generate_feeds = true
+feed_filenames = ["atom.xml", "rss.xml"]
+
+# Theme configuration
+theme = "nivis"
+compile_sass = true
+
+# Taxonomies
+taxonomies = [{ name = "tags", paginate_by = 5 }]
+
+# Search configuration
+build_search_index = false
+
+[markdown]
+render_emoji = true
+github_alerts = true
+bottom_footnotes = true
+
+[markdown.highlighting]
+style = "class"
+light_theme = "one-light"
+dark_theme = "one-dark-pro"
+extra_grammars = ["themes/nivis/syntaxes/math-display.json"]
+
+[extra]
+main_section = "posts"
+avatar = "headshot.jpg"
+
+# Homepage layout: "focus" (default) or "horizontal"
+home_layout = "focus"
+
+# Taxonomy display: "tags" (default), "category", or "none"
+taxonomy_mode = "tags"
+
+# Motto settings
+motto_mode = "multi"
+mottos = [
+    "Reimagining digital experiences. One idea at a time.",
+    "Creative Technologist & UI Developer",
+    "Code is poetry"
+]
+
+home_recent_posts = 5
+
+social_links = [
+    { name = "github", url = "https://github.com/simonwjackson" },
+    { name = "linkedin", url = "https://www.linkedin.com/in/simonwjackson" },
+    { name = "x-twitter", url = "https://x.com/simonwjackson" },
+    { name = "globe", url = "https://bsky.app/profile/simonwjackson.bsky.social" },
+    { name = "rss", url = "/atom.xml" }
+]
+
+[extra.footer]
+copyright_holder = "Simon W. Jackson"
+copyright_since = 2012
+
+[extra.sections]
+posts = true
+about = true
+archive = true
+tags = true
+links = true
