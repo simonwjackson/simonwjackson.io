@@ -1,0 +1,7 @@
+{
+  "private": true,
+  "description": "Not a Node project. Vercel reads engines.node to pick its build image; Zola builds the site.",
+  "engines": {
+    "node": "26.x"
+  }
+}
