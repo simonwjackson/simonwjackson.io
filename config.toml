@@ -10,7 +10,8 @@ default_language = "en"
 
 # When set to "true", a feed is automatically generated.
 generate_feeds = true
-feed_filenames = ["atom.xml", "rss.xml"]
+# llms.txt is rendered from templates/llms.txt as a feed so it lists every dated page.
+feed_filenames = ["atom.xml", "rss.xml", "llms.txt"]
 
 # Theme configuration
 theme = "nivis"

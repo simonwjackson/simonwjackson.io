@@ -1,0 +1,135 @@
+{#
+  A build log written by an AI coding agent. It is not Simon's writing, and
+  this template says so at the top of the page, in the page metadata, and in
+  the Markdown copy (scripts/emit-markdown.sh).
+
+  Front matter, all under [extra]:
+    agent        required  the agent's name, e.g. "Claude"
+    agent_model  required  the exact model ID that ran, e.g. "claude-opus-5-5"
+    agent_maker  optional  the company behind the model, e.g. "Anthropic"
+    reviewed     required  true only if Simon read the whole log before publishing
+    repository   optional  URL of the code the log describes
+#}
+{% extends "_base.html" %}
+{% block title %}{{ page.title }} | {{ config.title }}{% endblock title %}
+
+{% block head %}
+{% if not page.extra.agent or not page.extra.agent_model or page.extra.reviewed is not defined %}
+{{ throw(message="Log pages need extra.agent, extra.agent_model and extra.reviewed: " ~ page.relative_path) }}
+{% endif %}
+{% set markdown_url = page.permalink ~ "index.md" %}
+{% set cc0 = "https://creativecommons.org/publicdomain/zero/1.0/" %}
+{% if page.description %}
+{% set description = page.description | striptags %}
+{% else %}
+{% set description = page.summary | default(value=page.content, boolean=true) | striptags | truncate(length=160) %}
+{% endif %}
+
+<meta name="description" content="{{ description }}" />
+<meta name="ai-disclosure" content="{% if page.extra.reviewed %}ai-assisted{% else %}ai-autonomous{% endif %}" />
+<meta property="og:title" content="{{ page.title }} | {{ config.title }}" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="{{ page.permalink | safe }}" />
+<meta property="og:description" content="{{ description }}" />
+<meta property="og:site_name" content="{{ config.title }}" />
+{% if page.date %}
+<meta property="article:published_time" content="{{ page.date }}" />
+<meta property="article:modified_time" content="{{ page.updated | default(value=page.date, boolean=true) }}" />
+{% endif %}
+<link rel="alternate" type="text/markdown" title="Markdown copy of this log" href="{{ markdown_url | safe }}">
+<link rel="license" href="{{ cc0 }}">
+{% set simon_name = config.extra.footer.copyright_holder %}
+{% set simon_ld = '{"@type":"Person","name":' ~ simon_name | json_encode ~ ',"url":' ~ config.base_url | json_encode ~ '}' %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": {{ page.title | json_encode | safe }},
+  "description": {{ description | json_encode | safe }},
+  "url": {{ page.permalink | json_encode | safe }},
+  "inLanguage": {{ page.lang | json_encode | safe }},
+  {% if page.date %}"datePublished": {{ page.date | json_encode | safe }},
+  "dateModified": {{ page.updated | default(value=page.date, boolean=true) | json_encode | safe }},
+  {% endif %}"license": {{ cc0 | json_encode | safe }},
+  "publisher": {{ simon_ld | safe }},
+  {% if page.extra.reviewed %}"editor": {{ simon_ld | safe }},
+  {% endif %}{% if page.extra.repository %}"isBasedOn": {{ page.extra.repository | json_encode | safe }},
+  {% endif %}"contributor": {
+    "@type": "SoftwareApplication",
+    "name": {{ page.extra.agent | json_encode | safe }},
+    {% if page.extra.agent_maker %}"creator": {"@type": "Organization", "name": {{ page.extra.agent_maker | json_encode | safe }}},
+    {% endif %}"softwareVersion": {{ page.extra.agent_model | json_encode | safe }}
+  },
+  "encoding": {"@type": "MediaObject", "encodingFormat": "text/markdown", "contentUrl": {{ markdown_url | json_encode | safe }}}
+}
+</script>
+<style>
+  .article-content > blockquote.markdown-alert-note.log-disclosure::before { content: "How this was made"; }
+  .article-content > blockquote.log-disclosure p + p { margin-top: 0.5em; }
+  .log-license { margin-top: 3em; font-size: 0.9em; opacity: 0.8; }
+</style>
+{% endblock head %}
+
+{% block content %}
+{% set markdown_url = page.permalink ~ "index.md" %}
+{% set cc0 = "https://creativecommons.org/publicdomain/zero/1.0/" %}
+{% set default_content_lang = config.extra.content_lang | default(value=lang, boolean=true) %}
+<article class="content-article" lang="{{ page.extra.content_lang | default(value=default_content_lang, boolean=true) }}">
+  <main class="article-content">
+    <div class="article-intro-container">
+      <div class="intro-header">
+        <h1 class="heading">{{ page.title }}</h1>
+        <p class="subtitle">Written by {{ page.extra.agent }}, an AI agent</p>
+        <div class="meta-line">
+          {{<date_meta item={page}/>}}
+        </div>
+      </div>
+
+      <div class="intro-body">
+        {% if page.description %}
+        <div class="intro-abstract">
+          <div class="abstract-title">ABSTRACT</div>
+          <p class="description">{{ page.description }}</p>
+        </div>
+        {% endif %}
+
+        {% if page.toc and page.extra.toc | default(value=true) %}
+        <details class="intro-toc">
+          <summary class="toc-title">CONTENTS</summary>
+          <div class="toc-wrapper">
+            <ul class="toc-list">
+              <li class="toc-root">
+                <a href="#" class="active-toc">{{ page.title }}</a>
+                <ul>
+                  {% for h1 in page.toc %}
+                  <li>
+                    <a href="{{ h1.permalink | safe }}">{{ h1.title }}</a>
+                    {% if h1.children %}
+                    <ul>
+                      {% for h2 in h1.children %}
+                      <li><a href="{{ h2.permalink | safe }}">{{ h2.title }}</a></li>
+                      {% endfor %}
+                    </ul>
+                    {% endif %}
+                  </li>
+                  {% endfor %}
+                </ul>
+              </li>
+            </ul>
+          </div>
+        </details>
+        {% endif %}
+      </div>
+    </div>
+
+    <blockquote class="markdown-alert-note log-disclosure">
+      <p>{{ page.extra.agent }} ({{ page.extra.agent_model }}{% if page.extra.agent_maker %}, made by {{ page.extra.agent_maker }}{% endif %}) wrote this log while it did the work. {{ config.extra.footer.copyright_holder }} directed the work and ran each step on real hardware. {% if page.extra.reviewed %}He read this log before publishing it.{% else %}He did not edit or review this log.{% endif %}</p>
+      <p>It keeps the dead ends, the wrong guesses and their corrections, so that someone else, or their agent, can repeat the work. <a href="{{ markdown_url | safe }}">Plain Markdown copy for agents</a>{% if page.extra.repository %}, and <a href="{{ page.extra.repository | safe }}">the code it describes</a>{% endif %}. <a href="{{ get_url(path='@/logs/_index.md') }}">About these logs</a>.</p>
+    </blockquote>
+
+    {{ page.content | safe }}
+
+    <p class="log-license">The text of this log is dedicated to the public domain under <a href="{{ cc0 }}" rel="license">CC0 1.0</a>.</p>
+  </main>
+</article>
+{% endblock content %}

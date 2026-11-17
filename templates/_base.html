@@ -1,6 +1,8 @@
 {% set taxonomy_mode = config.extra.taxonomy_mode | default(value="tags") %}
 {% set taxonomy_section_enabled = config.extra.sections.tags | default(value=true) %}
 {{<validate_taxonomy_mode taxonomy_mode={taxonomy_mode}/>}}
+{#- The Logs link appears once a log is published (drafts do not count). #}
+{% set logs_section = get_section(path="logs/_index.md") %}
 <!doctype html>
 <html lang="{{ lang }}">
 
@@ -109,6 +111,10 @@
         {% if config.extra.sections.links | default(value=true) %}
         <a href="{{ get_url(path="@/links/index.md", lang=lang) }}">Links</a>
         {% endif %}
+
+        {% if logs_section.pages %}
+        <a href="{{ get_url(path="@/logs/_index.md", lang=lang) }}">Logs</a>
+        {% endif %}
       </nav>
     </div>
   </div>
@@ -138,6 +144,10 @@
 
         {% if config.extra.sections.links | default(value=true) %}
         <a href="{{ get_url(path="@/links/index.md", lang=lang) }}" {% if current_path is starting_with(pat="/links") %}class="active"{% endif %}>Links</a>
+        {% endif %}
+
+        {% if logs_section.pages %}
+        <a href="{{ get_url(path="@/logs/_index.md", lang=lang) }}" {% if current_path is starting_with(pat="/logs") %}class="active"{% endif %}>Logs</a>
         {% endif %}
       </nav>
       {% include "_topbar_controls.html" %}
