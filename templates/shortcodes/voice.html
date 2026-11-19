@@ -1,0 +1,10 @@
+{#- An inner voice: Curious, Cautious or Tired. 1 to 3 sentences.
+    Use: {% <voice who="tired"> %}Text.{% </voice> %} -#}
+{% component voice(who) %}
+{%- set names = {"curious": "Curious", "cautious": "Cautious", "tired": "Tired"} -%}
+{%- set marks = {"curious": "?", "cautious": "!", "tired": "z"} -%}
+<aside class="voice voice--{{ who }}" aria-label="{{ names[who] }}">
+  <span class="voice-mark" aria-hidden="true">{{ marks[who] }}</span>
+  <div class="voice-body"><span class="voice-name">{{ names[who] }}</span> {{ body | markdown(inline=true) | safe }}</div>
+</aside>
+{% endcomponent voice %}

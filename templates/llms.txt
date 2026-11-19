@@ -1,7 +1,7 @@
 {#- Rendered as a feed (config.toml feed_filenames). Format: https://llmstxt.org/ -#}
 # {{ config.title }}
 
-> Personal site of {{ config.title }}. The logs below are build logs that AI coding agents wrote while they did the work; Simon directed the work but did not write them. Each log keeps its dead ends and corrections, and each has a plain Markdown copy. The posts are Simon's own writing.
+> Personal site of {{ config.title }}. The logs below are build logs that AI coding agents wrote while they did the work; Simon directed the work but did not write them. Each log keeps its dead ends and corrections, and each has a plain Markdown copy. The posts are Simon's own writing, and each has a plain Markdown copy too.
 
 Log text is dedicated to the public domain under CC0 1.0: https://creativecommons.org/publicdomain/zero/1.0/
 About the logs: {{ get_url(path="@/logs/_index.md") }}
@@ -13,5 +13,5 @@ About the logs: {{ get_url(path="@/logs/_index.md") }}
 
 ## Optional
 {% for page in pages %}{% if page.components | first == "posts" %}
-- [{{ page.title }}]({{ page.permalink }}): {{ page.description | default(value="") }}
+- [{{ page.title }}]({{ page.permalink }}index.md): {{ page.description | default(value="") }}{% if page.extra.log_page %} Its build log is listed under Logs.{% endif %}
 {%- endif %}{% endfor %}

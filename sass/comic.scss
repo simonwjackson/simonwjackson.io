@@ -1,0 +1,1399 @@
+/*
+ * The comic look for posts, taken from Sparkslide's UI (src/ui/ui.css):
+ * graph paper, one inked sheet, ink borders, hard offset shadows, Bangers
+ * for lettering, Nunito for text. Direction A ("Sketch Pad"), chosen by
+ * Simon on 2026-11-18: round speech balloons for Simon, cut-corner robot
+ * balloons with a jagged tail for the Agent, comic headings.
+ *
+ * One meaning per colour:
+ *   spark yellow  Curious        alert red  Cautious     lilac  Tired
+ *   pink          Simon speaks   bolt blue  ↯ an agent message cut in
+ *   ink           the Agent speaks
+ *
+ * Day is the game's paper. Night is the same page after dark: ink paper,
+ * black lines. Sizes follow the width the story is given (container
+ * queries on .sheet).
+ */
+
+@font-face { font-family: "Bangers"; src: url("fonts/bangers-latin-400-normal.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "Nunito"; src: url("fonts/nunito-latin-600-normal.woff2") format("woff2"); font-weight: 600; font-display: swap; }
+@font-face { font-family: "Nunito"; src: url("fonts/nunito-latin-600-italic.woff2") format("woff2"); font-weight: 600; font-style: italic; font-display: swap; }
+@font-face { font-family: "Nunito"; src: url("fonts/nunito-latin-800-normal.woff2") format("woff2"); font-weight: 800; font-display: swap; }
+@font-face { font-family: "Nunito"; src: url("fonts/nunito-latin-900-normal.woff2") format("woff2"); font-weight: 900; font-display: swap; }
+@font-face { font-family: "Fira Code"; src: url("fonts/firacode-vf.woff2") format("woff2"); font-weight: 300 700; font-display: swap; }
+
+@mixin day {
+  --page: #fffaf0;
+  --grid: #a9dcf5;
+  --grid-bold: #6fc0ee;
+  --sheet: #fff7e8;   /* the game's --paper */
+  --card: #fffdf7;
+  --fg: #1b1433;      /* the game's --ink */
+  --muted: #5a5170;
+  --line-c: #1b1433;
+  --agent-bg: #1b1433;
+  --agent-fg: #fff7e8;
+  --code-bg: rgb(27 20 51 / 0.08);
+  --simon-label: #c2186f;
+  --photo-bg: #1b1433;
+  --title-fill: #fffdf7;
+  color-scheme: light;
+}
+
+@mixin night {
+  --page: #141027;
+  --grid: #231d42;
+  --grid-bold: #2f2858;
+  --sheet: #1e1838;
+  --card: #2a2249;
+  --fg: #f3ecdf;
+  --muted: #b5abcf;
+  --line-c: #07050f;
+  --agent-bg: #0b0818;
+  --agent-fg: #f3ecdf;
+  --code-bg: rgb(243 236 223 / 0.1);
+  --simon-label: #ff9ad4;
+  --photo-bg: #07050f;
+  --title-fill: #f3ecdf;
+  color-scheme: dark;
+}
+
+:root {
+  --spark: #ffd21f;
+  --alert: #ff3b4f;
+  --lilac: #b9a6ff;
+  --pink: #ff7fc8;
+  --bolt: #3d7dff;
+
+  --display: "Bangers", "Impact", sans-serif;
+  --text: "Nunito", system-ui, sans-serif;
+  --mono: "Fira Code", ui-monospace, monospace;
+
+  /* One spacing scale. */
+  --s1: 0.25rem;
+  --s2: 0.5rem;
+  --s3: 0.75rem;
+  --s4: 1rem;
+  --s5: 1.5rem;
+  --s6: 2.25rem;
+  --s7: 3.5rem;
+
+  --line: 2.5px;
+  --radius: 6px;
+  --cut: 12px;          /* the robot balloon's cut corners */
+  --measure: 36rem;
+
+  @include day;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { @include night; }
+}
+:root[data-theme="dark"] { @include night; }
+
+* { box-sizing: border-box; }
+
+/* The Sketch Pad's paper: fine squares, and a bold line every fourth. */
+html {
+  color: var(--fg);
+  background-color: var(--page);
+  background-image:
+    linear-gradient(var(--grid-bold) 0 2px, transparent 2px),
+    linear-gradient(90deg, var(--grid-bold) 0 2px, transparent 2px),
+    linear-gradient(var(--grid) 0 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 0 1px, transparent 1px);
+  background-size: 96px 96px, 96px 96px, 24px 24px, 24px 24px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--text);
+  font-weight: 600;
+  font-size: clamp(1.0625rem, 1rem + 0.25vw, 1.1875rem);
+  line-height: 1.6;
+}
+
+a { color: inherit; text-decoration-thickness: 2px; text-underline-offset: 0.15em; }
+a:focus-visible { outline: 3px solid var(--bolt); outline-offset: 2px; }
+
+/* ---------------------------------------------------------------- masthead */
+
+.masthead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s2) var(--s5);
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: var(--s4) var(--s4) 0;
+}
+
+.masthead-name {
+  font-family: var(--display);
+  font-size: 1.5rem;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+}
+
+.masthead-nav { display: flex; gap: var(--s4); font-weight: 800; }
+.masthead-nav a { text-decoration: none; }
+.masthead-nav a[aria-current] { text-decoration: underline; text-decoration-thickness: 3px; }
+
+/* ------------------------------------------------------------------ sheet */
+
+.sheet {
+  container: story / inline-size;
+  max-width: min(52rem, calc(100% - 2 * var(--s3)));
+  margin: var(--s5) auto var(--s7);
+  padding: var(--s4) var(--s5) var(--s6);
+  background: var(--sheet);
+  border: 3px solid var(--line-c);
+  border-radius: var(--radius);
+  box-shadow: 10px 10px 0 var(--line-c);
+}
+
+/* One reading column, centred on the sheet. */
+.story-head,
+.story-body {
+  max-width: var(--measure);
+  margin-inline: auto;
+}
+
+.story-body::after { content: ""; display: block; clear: both; }
+.story-body > p { margin: 0 0 var(--s4); }
+
+code {
+  font-family: var(--mono);
+  font-size: 0.86em;
+  overflow-wrap: anywhere;
+  background: var(--code-bg);
+  padding: 0.05em 0.3em;
+  border-radius: 3px;
+}
+
+/* --------------------------------------------------------------- top block */
+
+.story-title {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: clamp(2.5rem, 8cqi, 4.25rem);
+  line-height: 0.98;
+  letter-spacing: 0.01em;
+  margin: var(--s5) 0 var(--s4);
+  color: var(--title-fill);
+  -webkit-text-stroke: 0.09em var(--line-c);
+  paint-order: stroke fill;
+  text-shadow: 0.06em 0.06em 0 var(--line-c);
+  transform: rotate(-2deg);
+  transform-origin: left bottom;
+  text-wrap: balance;
+}
+
+/* Credits, like the credits box on a comic's first page: three short
+   cells that never wrap inside, so they read at a glance. */
+.story-credits {
+  display: flex;
+  flex-wrap: wrap;
+  margin: var(--s4) 0 0;
+  border: var(--line) solid var(--line-c);
+  border-radius: 4px;
+  gap: 1px;
+  background: var(--muted);
+  box-shadow: 5px 5px 0 var(--pink);
+  overflow: hidden;
+}
+.story-credits > div {
+  flex: 1 1 auto;
+  padding: var(--s2) var(--s4);
+  background: var(--card);
+}
+.story-credits dt { font-family: var(--display); letter-spacing: 0.04em; font-size: 0.95em; color: var(--muted); }
+.story-credits dd { margin: 0; font-weight: 900; white-space: nowrap; }
+
+/* The note: its own line of text under the credits, full contrast. */
+.story-note {
+  margin: var(--s5) 0 var(--s6);
+  font-size: 0.95em;
+  color: var(--fg);
+}
+
+/* --------------------------------------------------------------- headings */
+
+.story-body h2 {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: clamp(1.6rem, 4.6cqi, 2.1rem);
+  line-height: 1.05;
+  letter-spacing: 0.015em;
+  margin: var(--s7) 0 var(--s4);
+  overflow-wrap: anywhere;
+  scroll-margin-top: var(--s5);
+}
+
+/* ------------------------------------------------------------------ voices */
+
+.voice {
+  --c: var(--spark);
+  --mark: 2.1em;
+  position: relative;
+  margin: var(--s5) 0;
+  padding: var(--s3) var(--s4) var(--s3) calc(var(--mark) / 2 + var(--s3));
+  background: var(--card);
+  border: var(--line) solid var(--line-c);
+  border-radius: var(--radius);
+  box-shadow: 5px 5px 0 var(--c);
+}
+.voice--cautious { --c: var(--alert); }
+.voice--tired { --c: var(--lilac); }
+
+/* The mark sits on the card's left edge, half outside, centred top to
+   bottom, so it reads as the speaker's badge. */
+.voice-mark {
+  position: absolute;
+  left: calc(var(--mark) / -2 - var(--line) / 2);
+  top: 50%;
+  translate: 0 -50%;
+  display: grid;
+  place-items: center;
+  width: var(--mark);
+  height: var(--mark);
+  border-radius: 50%;
+  background: var(--c);
+  color: #1b1433;
+  border: var(--line) solid var(--line-c);
+  font-family: var(--display);
+  font-size: 1.05em;
+  line-height: 1;
+  padding-top: 0.08em;
+}
+.voice-mark { width: calc(var(--mark) / 1.05); height: calc(var(--mark) / 1.05); }
+
+.voice-name {
+  font-family: var(--display);
+  font-size: 1.15em;
+  letter-spacing: 0.03em;
+  margin-right: 0.2em;
+}
+
+/* ---------------------------------------------------- agent: robot balloon */
+
+/* The box has cut corners instead of round ones, and a jagged tail like a
+   bolt, so it reads as a machine talking. The shadow is a drop-shadow on
+   the outer element, so it follows the cut shape and the tail. */
+.agent {
+  --tl: var(--cut);
+  --tr: var(--cut);
+  --br: var(--cut);
+  --bl: var(--cut);
+  --shadow: var(--line-c);
+  position: relative;
+  margin: calc(var(--s5) + 2.2rem) 0 var(--s5);
+  filter: drop-shadow(5px 5px 0 var(--shadow));
+}
+.agent--cut { --shadow: var(--bolt); }
+
+/* Rivets near the four corners make the box read as a riveted plate. */
+.agent-shape {
+  --rivet: color-mix(in srgb, var(--agent-fg) 38%, transparent);
+  --rivet-in: calc(var(--cut) + 5px);
+  padding: var(--s3) var(--s5) var(--s4);
+  background:
+    radial-gradient(circle, var(--rivet) 2.2px, transparent 2.8px) left var(--rivet-in) top 7px / 8px 8px no-repeat,
+    radial-gradient(circle, var(--rivet) 2.2px, transparent 2.8px) right var(--rivet-in) top 7px / 8px 8px no-repeat,
+    radial-gradient(circle, var(--rivet) 2.2px, transparent 2.8px) left var(--rivet-in) bottom 7px / 8px 8px no-repeat,
+    radial-gradient(circle, var(--rivet) 2.2px, transparent 2.8px) right var(--rivet-in) bottom 7px / 8px 8px no-repeat,
+    var(--agent-bg);
+  color: var(--agent-fg);
+  clip-path: polygon(
+    var(--tl) 0, calc(100% - var(--tr)) 0, 100% var(--tr),
+    100% calc(100% - var(--br)), calc(100% - var(--br)) 100%,
+    var(--bl) 100%, 0 calc(100% - var(--bl)), 0 var(--tl)
+  );
+}
+
+/* The tail: a zigzag bolt out of the top right corner. */
+.agent::after {
+  content: "";
+  position: absolute;
+  right: 1.5rem;
+  bottom: calc(100% - 1px);
+  width: 3rem;
+  height: 2.5rem;
+  background: var(--agent-bg);
+  clip-path: polygon(90% 100%, 42% 100%, 48% 66%, 22% 60%, 34% 30%, 0 0, 64% 36%, 56% 58%, 80% 66%);
+}
+
+.agent-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s2);
+  margin-bottom: var(--s2);
+  padding-bottom: var(--s2);
+  border-bottom: 1px dashed color-mix(in srgb, var(--agent-fg) 30%, transparent);
+  font-family: var(--display);
+  font-size: 1.15em;
+  letter-spacing: 0.03em;
+}
+
+.agent-src {
+  margin-left: auto;
+  font-family: var(--text);
+  font-size: 0.68em;
+  letter-spacing: 0;
+  font-weight: 800;
+  opacity: 0.75;
+}
+
+.agent-body { margin: 0; }
+.agent code { background: rgb(255 247 232 / 0.14); }
+
+/* ↯: an agent message that cut into the scene. */
+.agent-bolt {
+  display: inline-grid;
+  place-items: center;
+  width: 1.5em;
+  height: 1.5em;
+  background: var(--bolt);
+  color: #fff;
+  border: 2px solid var(--agent-fg);
+  border-radius: 4px;
+  font-size: 0.9em;
+  line-height: 1;
+  transform: rotate(-8deg);
+}
+.agent-bolt svg { display: block; width: 0.9em; height: 0.9em; overflow: visible; }
+
+/* --------------------------------------------------------- callout stacks */
+
+/* A run of callouts reads as one stack: shared edges, a dashed seam between
+   voices. Each keeps its own colour on the right edge, so the speaker still
+   shows. Only an agent that opens a run keeps its tail. */
+:is(.voice, .agent):has(+ :is(.voice, .agent)) { margin-bottom: 0; }
+:is(.voice, .agent) + :is(.voice, .agent) { margin-top: calc(-1 * var(--line)); }
+
+.voice:has(+ :is(.voice, .agent)) { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+:is(.voice, .agent) + .voice { border-top-left-radius: 0; border-top-right-radius: 0; }
+.voice + .voice { border-top-style: dashed; }
+
+.agent:has(+ :is(.voice, .agent)) { --bl: 0px; --br: 0px; margin-bottom: 0; }
+:is(.voice, .agent) + .agent { --tl: 0px; --tr: 0px; margin-top: calc(-1 * var(--line)); }
+:is(.voice, .agent) + .agent::after { display: none; }
+.voice + .agent .agent-shape { border-top: 0; }
+
+/* --------------------------------------------------------------- exchange */
+
+/* What Simon said is a round speech balloon; the agent answers in its robot
+   balloon, set in a little, like the next panel. */
+.exchange {
+  margin: var(--s6) 0;
+  display: grid;
+  gap: var(--s4);
+}
+
+.exchange-label {
+  font-family: var(--display);
+  font-size: 1.1em;
+  letter-spacing: 0.03em;
+  margin-bottom: var(--s1);
+  color: var(--simon-label);
+}
+
+.exchange-said {
+  position: relative;
+  padding: var(--s4) var(--s5);
+  margin-bottom: var(--s3);
+  background: var(--card);
+  border: var(--line) solid var(--line-c);
+  border-radius: 1.6em;
+}
+
+/* The balloon's tail, pointing down: an ink triangle with a paper
+   triangle inside it, one line width in from each edge. */
+.exchange-said::before,
+.exchange-said::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-color: transparent;
+}
+.exchange-said::before {
+  left: 2.25em;
+  border-width: 1.15em 1.15em 0 0;
+  border-top-color: var(--line-c);
+}
+.exchange-said::after {
+  left: calc(2.25em + var(--line));
+  margin-top: calc(-1 * var(--line) - 0.5px);
+  border-width: calc(1.15em - 1.4 * var(--line)) calc(1.15em - 1.4 * var(--line)) 0 0;
+  border-top-color: var(--card);
+}
+
+.exchange-prompt {
+  margin: 0;
+  font-weight: 800;
+  font-size: 1.1em;
+  line-height: 1.45;
+}
+
+.exchange-src {
+  display: inline-block;
+  margin-top: var(--s2);
+  font-size: 0.8em;
+  font-weight: 800;
+  color: var(--muted);
+}
+
+.exchange .exchange-did { margin: 2.2rem 0 0 var(--s6); }
+.exchange--said-only .exchange-said { margin-bottom: var(--s4); }
+
+/* ----------------------------------------------------------------- photos */
+
+.photo { margin: var(--s6) auto; }
+
+.photo-frame {
+  display: block;
+  border: 3px solid var(--line-c);
+  background: var(--photo-bg);
+  border-radius: 4px 4px 0 0;
+  overflow: hidden;
+}
+
+.photo img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.photo-caption {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--s1) var(--s3);
+  padding: var(--s1) var(--s3);
+  background: var(--photo-bg);
+  color: #fff7e8;
+  border-radius: 0 0 4px 4px;
+  font-size: 0.85em;
+}
+
+.photo-time { font-family: var(--display); letter-spacing: 0.04em; font-size: 1.15em; }
+.photo-whole { margin-left: auto; font-weight: 800; font-size: 0.9em; opacity: 0.8; }
+
+/* A portrait photo stays short enough to see whole. */
+.photo--tall { width: min(100%, 20rem); }
+
+/* On a wide enough story, a portrait or square photo is set into the
+   text on the right, inside the reading column, like a panel in a magazine.
+   It floats only when a paragraph follows it to wrap around; otherwise it
+   stays centred. Strips of screen text stay full width, where they can be
+   read. */
+@container story (min-width: 34rem) {
+  .photo:is(.photo--tall, .photo--wide):has(+ p) {
+    float: right;
+    clear: both;
+    width: 45%;
+    margin: 0.35em 0 var(--s4) var(--s5);
+  }
+  .photo--tall .photo-caption,
+  .photo--wide .photo-caption { font-size: 0.78em; }
+  /* Callouts and headings never wrap around a photo. */
+  .story-body > :is(h2, .voice, .agent, .exchange) { clear: both; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .photo-frame img { transition: filter 0.2s; }
+  .photo-frame:hover img { filter: brightness(1.08); }
+}
+
+/* ---------------------------------------------------------------- footer */
+
+.colophon {
+  max-width: 52rem;
+  margin: 0 auto;
+  padding: 0 var(--s4) var(--s6);
+  font-size: 0.8em;
+  color: var(--muted);
+}
+
+/* =================================================================== logs */
+
+/* A log is the Agent talking, so its title leans the other way. */
+.story-title--log { transform: rotate(1.5deg); transform-origin: left bottom; }
+
+.story-credits--log { box-shadow: 5px 5px 0 var(--agent-bg); }
+.story-credits--log dd { white-space: normal; overflow-wrap: anywhere; }
+
+.log-disclosure { margin: calc(var(--s5) + 2.2rem) 0 var(--s5); }
+.log-disclosure .agent-body + .agent-body { margin-top: var(--s2); }
+.log-disclosure a { color: inherit; }
+
+.log-toc {
+  margin: 0 0 var(--s6);
+  background: var(--card);
+  border: var(--line) solid var(--line-c);
+  border-radius: var(--radius);
+}
+.log-toc summary {
+  cursor: pointer;
+  padding: var(--s2) var(--s4);
+  font-family: var(--display);
+  font-size: 1.15em;
+  letter-spacing: 0.03em;
+}
+.log-toc ol { margin: 0; padding: 0 var(--s4) var(--s3) calc(var(--s4) + 1.4em); }
+.log-toc li { padding: 0.15em 0; }
+
+.story-body h3 {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 1.35em;
+  letter-spacing: 0.02em;
+  margin: var(--s6) 0 var(--s3);
+  scroll-margin-top: var(--s5);
+}
+
+/* Code: the machine's own text, on an ink panel with the robot's cut
+   corners. It scrolls sideways inside its panel, never the page. */
+.story-body pre {
+  margin: var(--s5) 0;
+  padding: var(--s3) var(--s4);
+  overflow-x: auto;
+  background: #282c34;
+  color: #abb2bf;
+  font-family: var(--mono);
+  font-size: 0.82em;
+  line-height: 1.55;
+  clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
+}
+.story-body pre code { background: none; padding: 0; font-size: inherit; }
+
+.story-body ul,
+.story-body ol { margin: 0 0 var(--s4); padding-left: 1.4em; }
+.story-body li + li { margin-top: var(--s1); }
+
+/* Tables scroll sideways inside their box on a narrow story. */
+.story-body table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  margin: var(--s5) 0;
+  border-collapse: collapse;
+  font-size: 0.88em;
+  background: var(--card);
+  border: var(--line) solid var(--line-c);
+  border-radius: 4px;
+}
+.story-body th,
+.story-body td { padding: var(--s2) var(--s3); text-align: left; vertical-align: top; border-bottom: 1px dashed var(--muted); }
+.story-body th { font-family: var(--display); font-weight: 400; letter-spacing: 0.03em; font-size: 1.1em; }
+.story-body tr:last-child td { border-bottom: 0; }
+
+/* "Wrong guess:" and "Correction:" open a paragraph in bold. In a log they
+   read as stamps, so a reader can scan for where the agent was wrong. */
+.log-body p > strong:first-child {
+  display: inline-block;
+  margin-right: 0.15em;
+  padding: 0 0.35em;
+  font-family: var(--display);
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  border: 2px solid currentColor;
+  border-radius: 3px;
+  transform: rotate(-2deg);
+}
+
+.log-license { margin-top: var(--s6); font-size: 0.85em; color: var(--muted); }
+
+/* The Logs list: one robot card per log. */
+.logs-intro { margin-top: var(--s4); }
+.log-list {
+  list-style: none;
+  max-width: var(--measure);
+  margin: var(--s6) auto 0;
+  padding: 0;
+}
+.log-card { margin: calc(var(--s5) + 2.2rem) 0 var(--s5); }
+.log-card-title {
+  display: block;
+  font-family: var(--display);
+  font-size: 1.6em;
+  line-height: 1.1;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+}
+.log-card-title:hover { text-decoration: underline; }
+.log-card-desc { margin: var(--s2) 0; }
+.log-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--s4);
+  margin: 0;
+  font-size: 0.85em;
+  opacity: 0.8;
+}
+.log-empty { color: var(--muted); }
+
+/* The log's four credits sit two by two, so no cell is left alone on a row. */
+.story-credits--log { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+/* In a log, a quote is something Simon told the agent: his round balloon,
+   without the tail, because no speaker stands beside it. */
+.log-body blockquote {
+  margin: var(--s5) 0;
+  padding: var(--s3) var(--s5);
+  background: var(--card);
+  border: var(--line) solid var(--line-c);
+  border-radius: 1.6em;
+  font-weight: 800;
+}
+.log-body blockquote p { margin: 0; }
+@container story (max-width: 26rem) {
+  .story-credits--log { grid-template-columns: minmax(0, 1fr); }
+  .story-credits--log dd { white-space: nowrap; }
+}
+.story-body pre code { overflow-wrap: normal; }
+
+/* The log's title leans and sits close to the credits; give it room. */
+.story-title--log { margin-bottom: var(--s5); }
+
+/* "Before you start": a heads-up about what follows, not the start of the
+   story. A paper card with a tab label on its top edge, like a note
+   clipped to the page. */
+.brief {
+  position: relative;
+  margin: var(--s6) 0 var(--s6);
+  padding: var(--s5) var(--s4) var(--s3);
+  background: var(--card);
+  border: var(--line) dashed var(--line-c);
+  border-radius: var(--radius);
+  font-size: 0.92em;
+}
+.story-body .brief-label {
+  position: absolute;
+  top: 0;
+  left: var(--s4);
+  translate: 0 -55%;
+  margin: 0;
+  padding: 0.1em var(--s3) 0;
+  background: var(--sheet);
+  border: var(--line) solid var(--line-c);
+  border-radius: 4px;
+  font-size: 1.05em;
+  line-height: 1.2;
+  transform: rotate(-2deg);
+}
+.brief-body p { margin: 0 0 var(--s3); }
+
+/* ============================================= story and log, one project */
+
+/* Story / Build log: two links drawn as one two-part switch. The current
+   view is filled; the other is an outlined button. */
+.view-switch {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin: 0 0 var(--s5);
+  border: var(--line) solid var(--line-c);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: 4px 4px 0 var(--line-c);
+}
+.view-switch a {
+  display: flex;
+  flex-direction: column;
+  padding: var(--s2) var(--s4);
+  text-decoration: none;
+  background: var(--card);
+}
+.view-switch a + a { border-left: var(--line) solid var(--line-c); }
+.view-switch a[aria-current] { background: var(--agent-bg); color: var(--agent-fg); }
+.view-switch a:not([aria-current]):hover { background: var(--sheet); }
+.view-switch-name { font-family: var(--display); font-size: 1.3em; letter-spacing: 0.03em; line-height: 1.1; }
+.view-switch-hint { font-size: 0.8em; opacity: 0.8; }
+.view-switch a:first-child[aria-current] { background: var(--pink); color: #1b1433; }
+
+.fold-hint { margin: var(--s3) 0 var(--s6); font-size: 0.9em; color: var(--muted); }
+.fold-all {
+  margin-left: var(--s2);
+  padding: 0.15em var(--s3);
+  font: inherit;
+  font-weight: 800;
+  color: var(--fg);
+  background: var(--card);
+  border: 2px solid var(--line-c);
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* A fold: the part of the build log that belongs to this part of the
+   story. Closed, it is one robot plate with the log's section names and
+   its size; open, the log text runs on below in the log's own look. */
+details.logpart { margin: var(--s6) 0 var(--s6); }
+details.logpart::after { display: none; }
+.logpart-summary {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0 var(--s3);
+  cursor: pointer;
+  list-style: none;
+}
+.logpart-summary::-webkit-details-marker { display: none; }
+.logpart-label { font-family: var(--display); font-size: 1.15em; letter-spacing: 0.03em; }
+.logpart-label::before { content: "+ "; }
+details[open] .logpart-label::before { content: "– "; }
+.logpart-titles { grid-column: 1 / -1; font-size: 0.9em; }
+.logpart-size { grid-row: 1; grid-column: 2; align-self: center; font-size: 0.8em; opacity: 0.75; }
+.logpart-summary:focus-visible { outline: 3px solid var(--bolt); outline-offset: 3px; }
+.logpart-body {
+  margin-top: 0;
+  padding: var(--s4) var(--s4) var(--s2);
+  border: var(--line) solid var(--agent-bg);
+  border-top: 0;
+  background: var(--card);
+  font-size: 0.92em;
+}
+.logpart-body h2,
+.logpart-body h3 {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 1.4em;
+  letter-spacing: 0.02em;
+  margin: var(--s4) 0 var(--s2);
+}
+.logpart-body h4 { font-family: var(--display); font-weight: 400; font-size: 1.15em; letter-spacing: 0.02em; margin: var(--s4) 0 var(--s2); }
+.logpart-more { font-weight: 800; }
+
+/* On paper, every fold prints open. */
+@media print {
+  details.logpart > *:not(summary) { display: block !important; }
+}
+/* A narrow story stacks the fold's label, its sections and its size. */
+@container story (max-width: 30rem) {
+  .logpart-summary { grid-template-columns: minmax(0, 1fr); }
+  .logpart-size { grid-row: auto; grid-column: 1; }
+}
+
+.logpart-body h2 { margin: var(--s4) 0 var(--s2); }
+
+/* ======================================= post header: three review options */
+
+/* stack (default): credits box, note, switch, hint; as built so far. */
+
+/* line: the facts become one quiet line under the title; the switch
+   carries the two reading times, so the page has one box before the story. */
+[data-hd="line"] .story-credits {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--s4);
+  margin: 0 0 var(--s3);
+  border: 0;
+  box-shadow: none;
+  background: none;
+  overflow: visible;
+}
+[data-hd="line"] .story-credits > div { display: flex; gap: var(--s2); align-items: baseline; padding: 0; background: none; }
+[data-hd="line"] .story-credits > div:nth-child(n + 2) { display: none; }
+[data-hd="line"] .story-credits dt { font-size: 0.9em; }
+[data-hd="line"] .story-note { margin: 0 0 var(--s4); font-size: 0.9em; color: var(--muted); }
+
+/* panel: the title, facts and note sit on one inked panel, and the switch
+   hangs off its bottom edge as two tabs, like a folder. */
+[data-hd="panel"] .story-head {
+  padding: var(--s4) var(--s4) 0;
+  margin-bottom: var(--s6);
+  background: var(--card);
+  border: 3px solid var(--line-c);
+  border-radius: var(--radius);
+  box-shadow: 6px 6px 0 var(--pink);
+}
+[data-hd="panel"] .story-title { margin-top: var(--s2); }
+[data-hd="panel"] .story-credits { display: flex; margin: 0; border: 0; box-shadow: none; background: none; overflow: visible; }
+[data-hd="panel"] .story-credits > div { display: flex; gap: var(--s2); align-items: baseline; padding: 0; background: none; }
+[data-hd="panel"] .story-credits > div:nth-child(n + 2) { display: none; }
+[data-hd="panel"] .story-credits dt { font-size: 0.9em; }
+[data-hd="panel"] .story-note { margin: var(--s4) 0; font-size: 0.9em; }
+[data-hd="panel"] .view-switch {
+  margin: 0 calc(-1 * var(--s4));
+  border-width: 3px 0 0;
+  border-radius: 0 0 calc(var(--radius) - 3px) calc(var(--radius) - 3px);
+  box-shadow: none;
+}
+[data-hd="panel"] .fold-hint { margin: var(--s3) 0 var(--s3); }
+
+/* ============================================================= posts list */
+
+.posts-head { margin-bottom: var(--s6); }
+.posts-intro { margin: 0; color: var(--muted); }
+
+.post-list { list-style: none; margin: 0 auto; padding: 0; }
+.post-card article { position: relative; }
+
+.post-card-title {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 1.7em;
+  line-height: 1.05;
+  letter-spacing: 0.02em;
+  text-wrap: balance;
+}
+.post-card-title a { text-decoration: none; }
+.post-card-title a:hover { text-decoration: underline; }
+/* The whole card is one target; the title link stretches over it. */
+.post-card-title a::after { content: ""; position: absolute; inset: 0; z-index: 1; }
+.post-card-log { position: relative; z-index: 2; }
+.post-card-desc { margin: var(--s2) 0; }
+.post-card-meta { display: flex; flex-wrap: wrap; gap: 0 var(--s4); margin: 0; font-size: 0.85em; color: var(--muted); }
+.post-card-art img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+/* The robot chip: this post folds in an agent's build log. */
+.post-card-log {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s2);
+  margin-top: var(--s3);
+  padding: var(--s1) var(--s3) var(--s1) var(--s2);
+  background: var(--agent-bg);
+  color: var(--agent-fg);
+  font-size: 0.8em;
+  font-weight: 800;
+  text-decoration: none;
+  clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
+}
+.post-card-log .agent-bolt { width: 1.4em; height: 1.4em; transform: none; border-width: 1.5px; }
+
+/* A post with no picture gets its title as the art: lettering on a dotted panel. */
+
+
+
+/* The header and the list share one column, so their left edges line up. */
+.posts { max-width: var(--measure); margin-inline: auto; }
+.posts .story-head { max-width: none; }
+
+.posts-older { margin: var(--s6) 0 0; font-weight: 800; }
+
+/* --- mix: the newest post as a cover panel, the next four as panels side
+   by side, older posts as quiet index rows. One list, one grid: the cover
+   and the rows span every column. A lone panel takes the full width. */
+.posts-mix .posts { max-width: 46rem; }
+.posts-mix .post-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+  gap: var(--s5);
+}
+.posts-mix .post-card:is(:first-child, :nth-child(n + 6)) { grid-column: 1 / -1; }
+
+/* Panels: the cover and the next four. */
+.posts-mix .post-card:nth-child(-n + 5) article {
+  height: 100%;
+  background: var(--card);
+  border: 3px solid var(--line-c);
+  border-radius: var(--radius);
+  box-shadow: 5px 5px 0 var(--line-c);
+  overflow: hidden;
+}
+.posts-mix .post-card:nth-child(-n + 5) article:hover { box-shadow: 5px 5px 0 var(--pink); }
+.posts-mix .post-card:nth-child(-n + 5) .post-card-text { padding: var(--s3) var(--s4) var(--s4); }
+.posts-mix .post-card:nth-child(n + 2):nth-child(-n + 5) .post-card-art { display: block; aspect-ratio: 16 / 9; border-bottom: 3px solid var(--line-c); background: var(--photo-bg); }
+.posts-mix .post-card:nth-child(n + 2):nth-child(-n + 5):not(.post-card--cover) article::before {
+  content: "";
+  display: block;
+  height: 4.5rem;
+  border-bottom: 3px solid var(--line-c);
+  background: radial-gradient(rgb(27 20 51 / 0.18) 1.4px, transparent 1.8px) 0 0 / 10px 10px, var(--sheet);
+}
+.posts-mix .post-card:nth-child(n + 2):nth-child(-n + 5) .post-card-desc { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+
+/* The cover: picture beside the text when the panel is wide, above it when not. */
+.posts-mix .post-card:first-child article { box-shadow: 6px 6px 0 var(--pink); }
+.posts-mix .post-card:first-child .post-card-art { display: block; aspect-ratio: 16 / 9; border-bottom: 3px solid var(--line-c); background: var(--photo-bg); }
+.posts-mix .post-card:first-child .post-card-title { font-size: 2.4em; }
+@container story (min-width: 40rem) {
+  .posts-mix .post-card--cover:first-child article { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .posts-mix .post-card--cover:first-child .post-card-art { aspect-ratio: auto; min-height: 15rem; border-bottom: 0; border-right: 3px solid var(--line-c); }
+  .posts-mix .post-card--cover:first-child .post-card-text { align-self: center; padding: var(--s5); }
+}
+
+/* Rows: everything after the first five. */
+.posts-mix .post-card:nth-child(n + 6) { padding-top: var(--s4); border-top: 2px dashed var(--muted); }
+.posts-mix .post-card:nth-child(n + 6) .post-card-art { display: none; }
+.posts-mix .post-card:nth-child(n + 6) .post-card-title { font-size: 1.4em; }
+
+.post-card-art img { object-position: left center; }
+/* A panel with no partner in its row (2 or 4 posts in all) takes the row. */
+.posts-mix .post-card:is(:nth-child(2), :nth-child(4)):last-child { grid-column: 1 / -1; }
+
+/* The newest post stands out: a taller cover, bigger lettering, and a
+   thick ink rule between it and everything else. */
+.posts-mix .post-card:first-child {
+  padding-bottom: var(--s6);
+  margin-bottom: var(--s3);
+  border-bottom: 4px solid var(--line-c);
+}
+.posts-mix .post-card:first-child .post-card-title { font-size: clamp(2.4em, 7cqi, 3.4em); line-height: 0.95; }
+.posts-mix .post-card:first-child .post-card-desc { font-size: 1.1em; }
+@container story (min-width: 40rem) {
+  .posts-mix .post-card--cover:first-child .post-card-art { min-height: 20rem; }
+}
+
+/* ================================================================== pages */
+
+/* The portrait in the comic treatment: ink frame, grey tones pushed hard,
+   a halftone dot screen on top, and Simon's pink as the offset shadow. */
+.page-head--portrait { display: grid; gap: var(--s4); justify-items: start; }
+.portrait {
+  position: relative;
+  width: min(13rem, 55%);
+  margin: var(--s4) 0 0;
+  border: 3px solid var(--line-c);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: 6px 6px 0 var(--pink);
+  transform: rotate(-2deg);
+  background: #fffdf7;
+}
+.portrait img { display: block; width: 100%; height: auto; filter: grayscale(1) contrast(1.35) brightness(1.05); mix-blend-mode: multiply; }
+.portrait::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(rgb(27 20 51 / 0.32) 1.1px, transparent 1.6px) 0 0 / 5px 5px;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+@container story (min-width: 38rem) {
+  .page-head--portrait { grid-template-columns: auto 1fr; align-items: end; column-gap: var(--s6); }
+  .page-head--portrait .portrait { width: 12rem; }
+  .page-head--portrait .story-title { margin-bottom: var(--s2); }
+}
+
+/* A fold on paper: material a reader may skip. */
+details.fold {
+  margin: var(--s5) 0;
+  background: var(--card);
+  border: var(--line) solid var(--line-c);
+  border-radius: var(--radius);
+  box-shadow: 4px 4px 0 var(--line-c);
+}
+.fold-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 var(--s3);
+  padding: var(--s3) var(--s4);
+  cursor: pointer;
+  list-style: none;
+}
+.fold-summary::-webkit-details-marker { display: none; }
+.fold-label { font-family: var(--display); font-size: 1.3em; letter-spacing: 0.03em; }
+.fold-label::before { content: "+ "; }
+details[open] > .fold-summary .fold-label::before { content: "– "; }
+.fold-hint-text { font-size: 0.85em; color: var(--muted); }
+.fold-summary:focus-visible { outline: 3px solid var(--bolt); outline-offset: 3px; }
+.fold-body { padding: 0 var(--s4) var(--s3); border-top: 2px dashed var(--muted); }
+.fold-body h3 { margin-top: var(--s5); }
+.fold-body hr { border: 0; border-top: 2px dashed var(--muted); margin: var(--s5) 0; }
+@media print { details.fold > *:not(summary) { display: block !important; } }
+
+.story-body ul { list-style: square; }
+.page .story-body > h2:first-of-type { margin-top: var(--s6); }
+
+/* Zola's heading anchors: a quiet "#" in place of the 🔗 emoji, shown on
+   hover and keyboard focus. The link and its label stay. */
+.story-body :is(h2, h3, h4) { position: relative; }
+.zola-anchor { position: absolute; right: 100%; top: 0; padding-right: 0.3em; font-size: 0; text-decoration: none; }
+.zola-anchor::before { content: "#"; font-size: 1rem; font-family: var(--text); font-weight: 900; color: var(--muted); opacity: 0; vertical-align: 0.35em; }
+:is(h2, h3, h4):hover .zola-anchor::before,
+.zola-anchor:focus-visible::before { opacity: 1; }
+
+/* Room between the page title and the first words. */
+.page-head { margin-bottom: var(--s5); }
+
+/* ========================================== archives, tags, links, footer */
+
+.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+.listing { max-width: var(--measure); margin-inline: auto; }
+.listing .story-head { max-width: none; }
+
+/* Archives: a year is a lettered stamp; rows under it. */
+.year { margin: var(--s6) 0 0; }
+.story-body .year-stamp, .year-stamp {
+  display: inline-block;
+  margin: 0 0 var(--s3);
+  padding: 0.1em var(--s3) 0;
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 1.6em;
+  letter-spacing: 0.04em;
+  background: var(--card);
+  border: var(--line) solid var(--line-c);
+  border-radius: 4px;
+  box-shadow: 3px 3px 0 var(--line-c);
+  transform: rotate(-2deg);
+}
+.year-list { list-style: none; margin: 0; padding: 0; }
+.year-row {
+  display: grid;
+  grid-template-columns: 4.5rem minmax(0, 1fr) auto;
+  gap: var(--s3);
+  align-items: baseline;
+  padding: var(--s2) 0;
+  border-bottom: 1px dashed var(--muted);
+}
+.year-row:last-child { border-bottom: 0; }
+.year-row time { font-size: 0.85em; color: var(--muted); font-variant-numeric: tabular-nums; }
+.year-row a { font-weight: 800; text-decoration: none; }
+.year-row a:hover { text-decoration: underline; }
+.year-chip .agent-bolt { width: 1.4em; height: 1.4em; transform: none; border-color: var(--line-c); }
+/* On a tag page the date carries the year, so it needs more room. */
+.listing > .year-list .year-row { grid-template-columns: 7rem minmax(0, 1fr); }
+@container story (max-width: 24rem) {
+  .year-row, .listing > .year-list .year-row { grid-template-columns: minmax(0, 1fr) auto; }
+  .year-row time { grid-column: 1 / -1; }
+}
+
+/* Tags: stickers with a count badge. */
+.tag-cloud { list-style: none; display: flex; flex-wrap: wrap; gap: var(--s3); margin: var(--s5) 0 0; padding: 0; }
+.tag-sticker {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s2);
+  padding: var(--s1) var(--s2) var(--s1) var(--s3);
+  font-family: var(--display);
+  font-size: 1.25em;
+  letter-spacing: 0.03em;
+  text-decoration: none;
+  background: var(--card);
+  border: var(--line) solid var(--line-c);
+  border-radius: 999px;
+  box-shadow: 3px 3px 0 var(--line-c);
+}
+.tag-sticker:hover { box-shadow: 3px 3px 0 var(--pink); }
+.tag-count {
+  min-width: 1.6em;
+  padding: 0.05em 0.4em 0;
+  font-family: var(--text);
+  font-weight: 900;
+  font-size: 0.7em;
+  text-align: center;
+  background: var(--agent-bg);
+  color: var(--agent-fg);
+  border-radius: 999px;
+}
+.tag-crumb { margin: 0; font-weight: 800; }
+
+/* Links: rows with the picture in a small ink frame. */
+.link-group { margin-top: var(--s6); }
+.link-group h2 { margin: 0; font-family: var(--display); font-weight: 400; font-size: 1.8em; letter-spacing: 0.02em; }
+.link-group-desc { margin: 0 0 var(--s3); color: var(--muted); }
+.link-list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s3); }
+.link-row {
+  display: grid;
+  grid-template-columns: 3rem minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  column-gap: var(--s3);
+  align-items: center;
+  padding: var(--s2) var(--s3);
+  text-decoration: none;
+  background: var(--card);
+  border: var(--line) solid var(--line-c);
+  border-radius: var(--radius);
+  box-shadow: 3px 3px 0 var(--line-c);
+}
+.link-row:hover { box-shadow: 3px 3px 0 var(--pink); }
+.link-row img { grid-row: 1 / 3; width: 3rem; height: 3rem; object-fit: cover; border: 2px solid var(--line-c); border-radius: 4px; }
+.link-name { font-family: var(--display); font-size: 1.25em; letter-spacing: 0.03em; align-self: end; }
+.link-desc { font-size: 0.85em; color: var(--muted); align-self: start; }
+
+/* Footer: the pages that are not in the masthead. */
+.colophon-nav { display: flex; flex-wrap: wrap; gap: var(--s2) var(--s4); margin-bottom: var(--s2); font-weight: 800; font-size: 1.1em; }
+.colophon-nav a { color: var(--fg); }
+
+/* =================================================================== home */
+
+/* Home skips the sheet: the graph paper is the page, the name is lettered
+   on it like the logo on the game's title screen, and the rest is one
+   comic strip. */
+.home {
+  container: story / inline-size;
+  max-width: 62rem;
+  margin: 0 auto;
+  padding: var(--s5) var(--s5) var(--s7);
+}
+/* On Home the big name is the page's title; the masthead's small name
+   would say it twice. */
+.home-page .masthead-name { visibility: hidden; }
+
+/* The name: a thicker ink stroke and a paper halo, so the yellow keeps a
+   clear edge where it sits on the grid lines. */
+.home-name {
+  margin: var(--s4) 0 var(--s3);
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: clamp(3.2rem, 12.5cqi, 8rem);
+  line-height: 0.9;
+  letter-spacing: 0.015em;
+  color: var(--spark);
+  -webkit-text-stroke: 0.11em var(--line-c);
+  paint-order: stroke fill;
+  text-shadow:
+    0 0 0.06em var(--page),
+    0.06em 0.06em 0 var(--pink),
+    0.11em 0.11em 0 var(--line-c);
+  filter: drop-shadow(0 0 0.04em var(--page)) drop-shadow(0 0 0.04em var(--page));
+  transform: rotate(-3deg);
+  transform-origin: left bottom;
+  text-wrap: balance;
+}
+.home-tag {
+  display: inline-block;
+  margin: var(--s3) 0 var(--s6);
+  padding: var(--s2) var(--s4);
+  font-weight: 800;
+  font-size: 1.1em;
+  background: var(--card);
+  border: var(--line) solid var(--line-c);
+  border-radius: 4px;
+  box-shadow: 4px 4px 0 var(--line-c);
+}
+
+/* The strip: one page with white gutters; every panel has its own ink
+   frame. Panels read left to right, the way the cast talks in a post. */
+.strip {
+  list-style: none;
+  margin: 0;
+  padding: var(--s3);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s3);
+  background: var(--card);
+  border: 3px solid var(--line-c);
+  border-radius: var(--radius);
+  box-shadow: 8px 8px 0 var(--line-c);
+}
+.panel {
+  --tone: var(--pink);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--s3);
+  min-height: 12rem;
+  padding: var(--s3);
+  border: 3px solid var(--line-c);
+  background:
+    radial-gradient(color-mix(in srgb, var(--tone) 55%, transparent) 1.7px, transparent 2.3px) 0 0 / 10px 10px,
+    color-mix(in srgb, var(--tone) 18%, var(--card));
+}
+.panel--curious { --tone: var(--spark); }
+.panel--cautious { --tone: var(--alert); }
+.panel--tired { --tone: var(--lilac); }
+.panel--agent { --tone: var(--bolt); }
+.panel--simon, .panel--agent, .panel--latest { grid-column: 1 / -1; }
+
+/* A balloon at the top of the panel, its tail pointing down at the speaker. */
+.balloon {
+  position: relative;
+  align-self: flex-start;
+  max-width: 100%;
+  margin: 0 0 1.1rem;
+  padding: var(--s3) var(--s4);
+  font-weight: 800;
+  font-size: 1.1em;
+  line-height: 1.35;
+  background: var(--card);
+  border: var(--line) solid var(--line-c);
+  border-radius: 1.4em;
+}
+.balloon::before,
+.balloon::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-color: transparent;
+}
+.balloon::before { left: 1.6rem; border-width: 1rem 0 0 1rem; border-top-color: var(--line-c); }
+.balloon::after { left: calc(1.6rem + var(--line)); margin-top: calc(-1 * var(--line) - 0.5px); border-width: calc(1rem - 1.4 * var(--line)) 0 0 calc(1rem - 1.4 * var(--line)); border-top-color: var(--card); }
+
+/* The Agent talks from its robot plate: cut corners, a jagged tail. */
+.balloon--robot {
+  border: 0;
+  border-radius: 0;
+  background: var(--agent-bg);
+  color: var(--agent-fg);
+  clip-path: polygon(var(--cut) 0, calc(100% - var(--cut)) 0, 100% var(--cut), 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, var(--cut) 100%, 0 calc(100% - var(--cut)), 0 var(--cut));
+}
+.balloon--robot::before,
+.balloon--robot::after { display: none; }
+.panel--agent .who::before {
+  content: "";
+  position: absolute;
+  left: 1.4rem;
+  top: -1.45rem;
+  width: 1.6rem;
+  height: 1.5rem;
+  background: var(--agent-bg);
+  clip-path: polygon(10% 0, 58% 0, 52% 34%, 78% 40%, 66% 70%, 100% 100%, 36% 64%, 44% 42%, 20% 34%);
+}
+
+/* The speaker, at the foot of the panel. */
+.who { position: relative; display: flex; align-items: center; gap: var(--s3); margin: 0; }
+.who-badge,
+.who-face {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 3.6rem;
+  height: 3.6rem;
+  border: 3px solid var(--line-c);
+  border-radius: 50%;
+  background: var(--tone);
+  color: #1b1433;
+  font-family: var(--display);
+  font-size: 1.9rem;
+  line-height: 1;
+  box-shadow: 3px 3px 0 var(--line-c);
+}
+.panel--agent .who-badge { border-radius: 8px; background: var(--agent-bg); color: var(--bolt); font-size: 1.6rem; }
+.panel--agent .who-badge svg { width: 1em; height: 1em; }
+.who-face { object-fit: cover; filter: grayscale(1) contrast(1.3); background: #fffdf7; }
+.who-name { font-family: var(--display); font-size: 1.5em; letter-spacing: 0.03em; }
+
+/* The last panel: the newest post, with a caption box like "Meanwhile…". */
+.panel--latest { padding: 0; min-height: 0; background: var(--card); }
+.latest { display: grid; text-decoration: none; height: 100%; }
+.latest:hover .latest-title { text-decoration: underline; }
+.latest-art { display: block; background: var(--photo-bg); border-bottom: 3px solid var(--line-c); }
+.latest-art img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: left center; aspect-ratio: 16 / 9; }
+.latest-text { display: grid; gap: var(--s2); align-content: center; padding: var(--s4); }
+.caption {
+  justify-self: start;
+  padding: 0.15em var(--s3) 0;
+  font-family: var(--display);
+  letter-spacing: 0.04em;
+  background: var(--spark);
+  color: #1b1433;
+  border: 2px solid var(--line-c);
+}
+.latest-title { font-family: var(--display); font-size: 2.4em; line-height: 0.95; letter-spacing: 0.02em; }
+.latest-log {
+  justify-self: start;
+  padding: var(--s1) var(--s3);
+  font-size: 0.8em;
+  font-weight: 800;
+  background: var(--agent-bg);
+  color: var(--agent-fg);
+  clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
+}
+
+/* Wider strip: three rows of panels with different widths, like a page. */
+@container story (min-width: 44rem) {
+  .strip { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .panel { min-height: 14rem; }
+  .panel--simon { grid-column: span 4; }
+  .panel--curious { grid-column: span 2; }
+  .panel--cautious { grid-column: span 2; }
+  .panel--agent { grid-column: span 2; }
+  .panel--tired { grid-column: span 2; }
+  .panel--latest { grid-column: 1 / -1; }
+  .latest { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); }
+  .latest-art { border-bottom: 0; border-right: 3px solid var(--line-c); }
+  .latest-art img { aspect-ratio: auto; min-height: 16rem; }
+  .panel--simon .balloon { font-size: 1.35em; }
+}
+
+/* Doors: three big plates, like the game's menu buttons. */
+.home-doors { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr)); gap: var(--s4); margin-top: var(--s7); }
+.home-doors a {
+  display: grid;
+  padding: var(--s3) var(--s4);
+  text-decoration: none;
+  background: var(--card);
+  border: 3px solid var(--line-c);
+  box-shadow: 5px 5px 0 var(--line-c);
+  transform: skewX(-6deg);
+}
+.home-doors a > * { transform: skewX(6deg); }
+.home-doors a:hover { background: var(--spark); color: #1b1433; }
+.home-doors span { font-family: var(--display); font-size: 2em; letter-spacing: 0.03em; line-height: 1; }
+.home-doors small { font-size: 0.85em; font-weight: 800; opacity: 0.8; }
+/* Narrow strip: Tired takes a full row (it would sit alone otherwise), and
+   the speaker's name drops under a smaller badge so it never overflows. */
+.panel--tired { grid-column: 1 / -1; }
+.who { flex-wrap: wrap; row-gap: var(--s1); }
+.who-name { font-size: 1.3em; overflow-wrap: anywhere; }
+@container story (max-width: 30rem) {
+  .who-badge, .who-face { width: 2.8rem; height: 2.8rem; font-size: 1.5rem; }
+  .balloon { font-size: 1em; }
+}
+@container story (min-width: 44rem) {
+  .panel--tired { grid-column: span 2; }
+  .who-name { font-size: 1.5em; }
+}
+
+/* What the strip is: a narration caption, like the box at the top of a
+   comic panel, sits on the strip's top edge. */
+.strip-wrap { position: relative; padding-top: 1.4rem; }
+.story-body .strip-caption, .strip-caption {
+  position: absolute;
+  top: 0;
+  left: var(--s4);
+  z-index: 1;
+  margin: 0;
+  max-width: calc(100% - 2 * var(--s4));
+  padding: var(--s2) var(--s4) var(--s1);
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 1.3em;
+  line-height: 1.15;
+  letter-spacing: 0.03em;
+  background: var(--card);
+  color: var(--fg);
+  border: 3px solid var(--line-c);
+  box-shadow: 4px 4px 0 var(--line-c);
+  transform: rotate(-1.5deg);
+}
+.strip { padding-top: 2.6rem; }
+.who-text { display: grid; }
+.who-role { font-size: 0.85em; font-weight: 800; color: var(--muted); }
+.strip-more { margin: var(--s4) 0 0; font-weight: 800; }
+
+/* The newest post, after the cast, as one wide panel of its own. */
+.home-latest-panel {
+  margin-top: var(--s6);
+  border: 3px solid var(--line-c);
+  border-radius: var(--radius);
+  box-shadow: 8px 8px 0 var(--line-c);
+  overflow: hidden;
+}
+@container story (min-width: 44rem) {
+  .home-latest-panel .latest { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); }
+  .home-latest-panel .latest-art { border-bottom: 0; border-right: 3px solid var(--line-c); }
+  .home-latest-panel .latest-art img { aspect-ratio: auto; min-height: 16rem; }
+}
+
+/* Plain Markdown in any post: quotes, tables and images in the comic look. */
+.story-body > blockquote {
+  margin: var(--s5) 0;
+  padding: var(--s3) var(--s4);
+  background: var(--card);
+  border: var(--line) solid var(--line-c);
+  border-radius: var(--radius);
+}
+.story-body > blockquote p { margin: 0; }
+.story-body > blockquote p + p { margin-top: var(--s2); }
+.story-body img { max-width: 100%; height: auto; }
+.story-body > p > img { display: block; border: 3px solid var(--line-c); border-radius: 4px; }
+.story-body h3 { font-family: var(--display); font-weight: 400; font-size: 1.35em; letter-spacing: 0.02em; margin: var(--s6) 0 var(--s3); }
+/* A newest post with no picture is text across the whole panel. */
+.home-latest-panel .latest:not(:has(.latest-art)) { grid-template-columns: minmax(0, 1fr); }
+.home-latest-panel .latest:not(:has(.latest-art)) .latest-text { padding: var(--s5); }

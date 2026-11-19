@@ -1,0 +1,102 @@
+{#-
+  A post in the comic look. The article set the look first; the rest of
+  the site follows (logs next).
+-#}
+{% extends "comic-base.html" %}
+{% block title %}{{ page.title }} | {{ config.title }}{% endblock title %}
+{% block head %}
+  <script>
+    (function () {
+      var q = new URLSearchParams(location.search);
+      document.documentElement.dataset.hd = q.get("hd") || "stack";
+    })();
+  </script>
+  <meta name="description" content="{{ page.description }}">
+  <meta name="author" content="{{ page.extra.byline | default(value=config.extra.footer.copyright_holder) }}">
+  <meta property="og:title" content="{{ page.title }}">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="{{ page.permalink | safe }}">
+  <meta property="og:description" content="{{ page.description }}">
+  <link rel="canonical" href="{{ page.permalink | safe }}">
+  <link rel="alternate" type="text/markdown" title="Plain Markdown copy of this post" href="{{ page.permalink | safe }}index.md">
+  {%- if page.extra.log_page %}
+  {%- set lp = get_page(path=page.extra.log_page) %}
+  <link rel="alternate" type="text/markdown" title="Plain Markdown copy of the build log" href="{{ lp.permalink | safe }}index.md">
+  {%- endif %}
+  {% set simon_ld = '{"@type":"Person","name":' ~ config.extra.footer.copyright_holder | json_encode ~ ',"url":' ~ config.base_url | json_encode ~ '}' %}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": {{ page.title | json_encode | safe }},
+    "description": {{ page.description | default(value="") | json_encode | safe }},
+    "url": {{ page.permalink | json_encode | safe }},
+    "inLanguage": {{ page.lang | json_encode | safe }},
+    {% if page.date %}"datePublished": {{ page.date | json_encode | safe }},
+    "dateModified": {{ page.updated | default(value=page.date, boolean=true) | json_encode | safe }},
+    {% endif %}"author": {{ simon_ld | safe }},
+    "contributor": {"@type": "SoftwareApplication", "name": "Claude", "creator": {"@type": "Organization", "name": "Anthropic"}},
+    {% if page.extra.log_page %}"hasPart": {
+      "@type": "TechArticle",
+      "headline": {{ lp.title | json_encode | safe }},
+      "url": {{ lp.permalink | json_encode | safe }},
+      "contributor": {"@type": "SoftwareApplication", "name": {{ lp.extra.agent | json_encode | safe }}, "softwareVersion": {{ lp.extra.agent_model | json_encode | safe }}}
+    },
+    {% endif %}"encoding": {"@type": "MediaObject", "encodingFormat": "text/markdown", "contentUrl": {{ (page.permalink ~ "index.md") | json_encode | safe }}}
+  }
+  </script>
+{% endblock head %}
+{% block content %}
+    <article class="story">
+      {%- if page.extra.log_page %}{% set lp = get_page(path=page.extra.log_page) %}{% endif %}
+      <header class="story-head">
+        <h1 class="story-title">{{ page.title }}</h1>
+        {#- Only what changes from post to post; the note says who wrote what. #}
+        <dl class="story-credits">
+          <div><dt>Date</dt><dd><time datetime="{{ page.date }}">{{ page.date | date(format="%b %-d, %Y") }}</time></dd></div>
+          <div><dt>Post</dt><dd>{{ page.reading_time }} min read</dd></div>
+          {%- if lp %}
+          <div><dt>Build log</dt><dd>{{ lp.reading_time }} min more</dd></div>
+          {%- endif %}
+        </dl>
+        {%- if page.extra.byline is defined %}{% include "partials/byline-note.html" %}{% endif %}
+        {%- if lp %}
+        {% set story = page.permalink %}{% set log = lp.permalink %}{% set current = "story" %}
+        {% set story_min = page.reading_time %}{% set log_min = lp.reading_time %}
+        {% include "partials/view-switch.html" %}
+        <p class="fold-hint">The agent's build log is folded under each part of the post. <button type="button" class="fold-all" hidden>Open every part</button></p>
+        {%- endif %}
+      </header>
+
+      <div class="story-body">
+        {%- if page.extra.log_page %}
+        {%- set lp = get_page(path=page.extra.log_page) -%}
+        {%- set chunks = page.content | split(pat="<!--LOGPART:") -%}
+        {%- for chunk in chunks %}
+          {%- if loop.first %}{{ chunk | safe }}{% else %}
+            {%- set ids = chunk | split(pat="-->") | first -%}
+            {{<logfold lp={lp} ids={ids} top={loop.index == 2 and not ('<h2' in (chunks | first))}/>}}
+            {{ chunk | replace(from=ids ~ "-->", to="") | safe }}
+          {%- endif %}
+        {%- endfor %}
+        {%- else %}
+        {{ page.content | safe }}
+        {%- endif %}
+      </div>
+    </article>
+    <script>
+      (function () {
+        var b = document.querySelector(".fold-all");
+        if (!b) return;
+        var folds = document.querySelectorAll("details.logpart");
+        if (new URLSearchParams(location.search).get("open") === "1") folds.forEach(function (d) { d.open = true; });
+        b.hidden = false;
+        b.addEventListener("click", function () {
+          var open = b.dataset.open !== "1";
+          folds.forEach(function (d) { d.open = open; });
+          b.dataset.open = open ? "1" : "0";
+          b.textContent = open ? "Close every part" : "Open every part";
+        });
+      })();
+    </script>
+{% endblock content %}

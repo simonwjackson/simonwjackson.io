@@ -1,0 +1,26 @@
+{#-
+  A photo of the tablet's screen, kept in the post's own folder.
+  Use: {{<photo dir="posts/my-post/" src="x.jpg" screen="x-screen.jpg" time="10:02 pm" alt="…"/>}}
+    dir     the post folder under content/, for reading image sizes
+    src     the whole photo; the picture links to it
+    screen  optional crop of just the screen; shown instead of src
+    alt     what the photo shows, for screen readers
+    time    when it was taken
+    caption optional words after the time
+  Shape comes from the shown image: tall, wide, or strip (more than 2.2:1).
+  On a wide story, tall and wide photos move into the margin; strips stay in the text.
+-#}
+{% component photo(dir, src, alt, screen="", time="", caption="", tilt=0.0) %}
+{%- set shown = screen | default(value=src) -%}
+{%- set meta = get_image_metadata(path=dir ~ shown) -%}
+{%- if meta.width > meta.height * 2.2 %}{% set shape = "strip" %}{% elif meta.height > meta.width %}{% set shape = "tall" %}{% else %}{% set shape = "wide" %}{% endif -%}
+<figure class="photo photo--{{ shape }}" style="--tilt: {{ tilt }}deg">
+  <a class="photo-frame" href="{{ src }}">
+    <img src="{{ shown }}" alt="{{ alt }}" width="{{ meta.width }}" height="{{ meta.height }}">
+  </a>
+  <figcaption class="photo-caption">
+    {%- if time %}<span class="photo-time">{{ time }}</span>{% endif %}{% if caption %} {{ caption }}{% endif -%}
+    {%- if screen %}<a class="photo-whole" href="{{ src }}">Whole photo</a>{% endif -%}
+  </figcaption>
+</figure>
+{% endcomponent photo %}

@@ -1,0 +1,41 @@
+{#-
+  A plain page in the comic look (About and the like): title, an optional
+  portrait in the comic treatment, then the content.
+    extra.portrait      image path under static/, e.g. "headshot.jpg"
+    extra.portrait_alt  what it shows
+-#}
+{% extends "comic-base.html" %}
+{% block title %}{{ page.title }} | {{ config.title }}{% endblock title %}
+{% block head %}
+  {%- if page.description %}<meta name="description" content="{{ page.description }}">{% endif %}
+  <meta property="og:title" content="{{ page.title }} | {{ config.title }}">
+  <meta property="og:type" content="profile">
+  <meta property="og:url" content="{{ page.permalink | safe }}">
+  <link rel="canonical" href="{{ page.permalink | safe }}">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ProfilePage",
+    "url": {{ page.permalink | json_encode | safe }},
+    "mainEntity": {
+      "@type": "Person",
+      "name": {{ config.extra.footer.copyright_holder | json_encode | safe }},
+      "url": {{ config.base_url | json_encode | safe }}{% if page.extra.portrait %},
+      "image": {{ get_url(path=page.extra.portrait) | json_encode | safe }}{% endif %}
+    }
+  }
+  </script>
+{% endblock head %}
+{% block content %}
+<article class="story page">
+  <header class="story-head page-head{% if page.extra.portrait %} page-head--portrait{% endif %}">
+    {%- if page.extra.portrait %}
+    <figure class="portrait"><img src="{{ get_url(path=page.extra.portrait) }}" alt="{{ page.extra.portrait_alt }}" width="800" height="800"></figure>
+    {%- endif %}
+    <h1 class="story-title">{{ page.title }}</h1>
+  </header>
+  <div class="story-body">
+    {{ page.content | safe }}
+  </div>
+</article>
+{% endblock content %}

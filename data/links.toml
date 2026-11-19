@@ -12,6 +12,5 @@ items = [
 name = "Tools & Credits"
 desc = "What this site runs on"
 items = [
-    { name = "Zola", url = "https://www.getzola.org/", description = "Fast static site generator written in Rust.", avatar = "https://avatars.githubusercontent.com/u/43047029" },
-    { name = "Nivis Theme", url = "https://github.com/Resorie/zola-theme-nivis", description = "Clean, responsive Zola theme created by Resory.", avatar = "https://avatars.githubusercontent.com/u/49238603" }
+    { name = "Zola", url = "https://www.getzola.org/", description = "Fast static site generator written in Rust.", avatar = "https://avatars.githubusercontent.com/u/43047029" }
 ]

@@ -1,0 +1,10 @@
+{#-
+  Marks where the build log for this part of the story is folded in. The
+  page template (comic-post.html, macro in partials/logpart.html) replaces
+  the marker with the log's sections, read from page.extra.log_page; a
+  shortcode cannot read another page while Markdown renders.
+
+  Use: {{<logpart ids="first-boot,brightness"/>}}
+    ids  the log's h2 ids, comma-separated, in order
+-#}
+{% component logpart(ids) %}<!--LOGPART:{{ ids }}-->{% endcomponent logpart %}

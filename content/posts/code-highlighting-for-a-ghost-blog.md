@@ -7,6 +7,8 @@ date = 2016-09-12
 tags = ["Blogging", "JavaScript"]
 
 [extra]
+# Listed in Archives only, not on the Posts list.
+archived = true
 toc = true
 +++
 

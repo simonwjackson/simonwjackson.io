@@ -1,0 +1,59 @@
+{#-
+  The comic look's page frame (from Sparkslide's UI): masthead, one inked
+  sheet on graph paper, footer. Used by comic-post.html, log-page.html and
+  logs.html. The rest of the site still uses the Nivis _base.html.
+
+  The page follows the reader's system light or dark setting. Review only:
+  ?theme=light or ?theme=dark forces one.
+
+  Blocks: title, head (extra meta), content. The masthead marks Posts or
+  Logs from the current path.
+-#}
+<!doctype html>
+<html lang="{{ lang }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>{% block title %}{{ config.title }}{% endblock title %}</title>
+  <link rel="preload" href="{{ get_url(path='fonts/bangers-latin-400-normal.woff2') }}" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="{{ get_url(path='fonts/nunito-latin-600-normal.woff2') }}" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="{{ get_url(path='comic.css', cachebust=true) }}">
+  {% if config.markdown.highlighting.style == "class" %}
+  <link rel="stylesheet" href="{{ get_url(path='giallo-dark.css') }}">
+  {% endif %}
+  <script>
+    (function () {
+      var t = new URLSearchParams(location.search).get("theme");
+      if (t) document.documentElement.dataset.theme = t;
+    })();
+  </script>
+  {% block head %}{% endblock head %}
+</head>
+<body{% if current_path and current_path == "/" %} class="home-page"{% endif %}>
+  <header class="masthead">
+    <a class="masthead-name" href="{{ get_url(path='@/_index.md') }}">Simon W. Jackson</a>
+    <nav class="masthead-nav" aria-label="Site">
+      <a href="{{ get_url(path='@/posts/_index.md') }}"{% if current_path and current_path is starting_with(pat="/posts") %} aria-current="page"{% endif %}>Posts</a>
+      <a href="{{ get_url(path='@/logs/_index.md') }}"{% if current_path and current_path is starting_with(pat="/logs") %} aria-current="page"{% endif %}>Logs</a>
+      <a href="{{ get_url(path='@/about/index.md') }}"{% if current_path and current_path is starting_with(pat="/about") %} aria-current="page"{% endif %}>About</a>
+    </nav>
+  </header>
+
+  {% block main %}
+  <main class="sheet">
+    {% block content %}{% endblock content %}
+  </main>
+  {% endblock main %}
+
+  <footer class="colophon">
+    <nav class="colophon-nav" aria-label="More">
+      <a href="{{ get_url(path='@/archive/index.md') }}">Archives</a>
+      <a href="{{ get_url(path='tags', trailing_slash=true) }}">Tags</a>
+      <a href="{{ get_url(path='@/links/index.md') }}">Links</a>
+      <a href="{{ get_url(path='atom.xml') }}">RSS</a>
+    </nav>
+    <p>Copyright © 2012–{{ now() | date(format="%Y") }} Simon W. Jackson. Built with Zola.</p>
+  </footer>
+</body>
+</html>

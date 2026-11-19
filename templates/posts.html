@@ -1,0 +1,68 @@
+{#-
+  The Posts list in the comic look. Posts with extra.archived = true stay
+  out of it; Archives lists every post.
+
+  An entry shows what a reader decides on: title, one-line description,
+  date, reading time, a cover picture when the post has one
+  (extra.cover, extra.cover_alt), and a robot chip when the post folds in
+  an agent's build log (extra.log_page), with the log's reading time.
+
+  The mix (Simon's pick of all three): the newest post is a cover panel,
+  the next four are panels side by side, older ones are quiet index rows.
+
+  Review only: ?pl= picks a direction (mix, shelf, index, feature); ?all=1 shows the archived posts too, to judge
+  a long list.
+-#}
+{% extends "comic-base.html" %}
+{% block title %}{{ section.title }} | {{ config.title }}{% endblock title %}
+{% block head %}
+<meta name="description" content="Posts by {{ config.extra.footer.copyright_holder }}: projects he builds, most of them with AI agents.">
+<meta property="og:title" content="{{ section.title }} | {{ config.title }}">
+<meta property="og:type" content="website">
+<meta property="og:url" content="{{ section.permalink | safe }}">
+<link rel="canonical" href="{{ section.permalink | safe }}">
+<link rel="alternate" type="text/plain" title="Index for agents" href="{{ get_url(path='llms.txt') }}">
+{% endblock head %}
+
+{% block content %}
+<div class="posts-mix">
+<div class="posts">
+  <header class="story-head posts-head">
+    <h1 class="story-title">{{ section.title }}</h1>
+    <p class="posts-intro">Tinkering, mostly with an agent at the keyboard and me on the buttons.</p>
+  </header>
+
+  <ol class="post-list">
+    {%- for post in section.pages %}
+    {%- if not post.extra.archived | default(value=false) %}
+    {%- if post.extra.log_page %}{% set lp = get_page(path=post.extra.log_page) %}{% else %}{% set lp = false %}{% endif %}
+    <li class="post-card{% if post.extra.cover %} post-card--cover{% endif %}">
+      <article>
+        {%- if post.extra.cover %}
+        <a class="post-card-art" href="{{ post.permalink | safe }}" tabindex="-1" aria-hidden="true">
+          <img src="{{ post.permalink | safe }}{{ post.extra.cover }}" alt="" loading="eager">
+        </a>
+        {%- endif %}
+        <div class="post-card-text">
+          <h2 class="post-card-title"><a href="{{ post.permalink | safe }}">{{ post.title }}</a></h2>
+          {%- if post.description %}<p class="post-card-desc">{{ post.description }}</p>{% endif %}
+          <p class="post-card-meta">
+            <time datetime="{{ post.date }}">{{ post.date | date(format="%b %-d, %Y") }}</time>
+            <span>{{ post.reading_time }} min read</span>
+          </p>
+          {%- if lp %}
+          <a class="post-card-log" href="{{ lp.permalink | safe }}">
+            <span class="agent-bolt" aria-hidden="true"><svg viewBox="0 0 16 16" width="1em" height="1em"><path d="M9.5 1 3 9h4.2L5.8 15 13 6.6H8.7z" fill="currentColor"/></svg></span>
+            <span>With the agent's build log, {{ lp.reading_time }} min</span>
+          </a>
+          {%- endif %}
+        </div>
+      </article>
+    </li>
+    {%- endif %}
+    {%- endfor %}
+  </ol>
+  <p class="posts-older"><a href="{{ get_url(path='@/archive/index.md') }}">Older posts, from 2012 on, are in Archives</a></p>
+</div>
+</div>
+{% endblock content %}

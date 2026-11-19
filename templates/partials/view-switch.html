@@ -1,0 +1,17 @@
+{#-
+  One project, two ways to read it: Simon's post and the agent's build log.
+  Plain links styled as a two-part switch, so it works without JavaScript
+  and each view has its own address. Include with `story` and `log` set to
+  the two paths, `current` set to "story" or "log", and optionally
+  `story_min` and `log_min` (reading minutes).
+-#}
+<nav class="view-switch" aria-label="Ways to read this project">
+  <a href="{{ story }}"{% if current == "story" %} aria-current="page"{% endif %}>
+    <span class="view-switch-name">Post</span>
+    <span class="view-switch-hint">by Simon{% if story_min %}, {{ story_min }} min{% endif %}</span>
+  </a>
+  <a href="{{ log }}"{% if current == "log" %} aria-current="page"{% endif %}>
+    <span class="view-switch-name">Build log</span>
+    <span class="view-switch-hint">by the agent{% if log_min %}, {{ log_min }} min{% endif %}</span>
+  </a>
+</nav>

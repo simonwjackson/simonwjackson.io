@@ -1,28 +1,21 @@
-{% extends "_base.html" %} {% block title %}Tags | {{ config.title }}{%
-endblock title %} {% block content %}
-{% set taxonomy_mode = config.extra.taxonomy_mode | default(value="tags") %}
-{% set taxonomy_section_enabled = config.extra.sections.tags | default(value=true) %}
-{% if taxonomy_section_enabled and taxonomy_mode != "none" %}
-<main class="article-list">
-  <div class="article-header">
-    <h1 class="heading">Tags</h1>
-  </div>
-
-  {% if terms %} {% set my_terms = terms %} {% else %} {% set taxonomy =
-  get_taxonomy(kind="tags", lang=lang) %} {% set my_terms = taxonomy.items %} {%
-  endif %}
-
-  <div class="category-cloud">
-    {% for term in my_terms %}
-    <a href="{{ term.permalink }}" class="category-chip">
-      {% if taxonomy_mode == "tags" %}
-      <span class="category-prefix">#</span>
-      {% endif %}
-      <span class="category-name">{{ term.name }}</span>
-      <span class="category-count">{{ term.pages | length }}</span>
-    </a>
+{#- Tags in the comic look: each tag a sticker with its post count. -#}
+{% extends "comic-base.html" %}
+{% block title %}Tags | {{ config.title }}{% endblock title %}
+{% block head %}
+<meta name="description" content="Topics of posts by {{ config.extra.footer.copyright_holder }}.">
+{% endblock head %}
+{% block content %}
+<div class="story listing">
+  <header class="story-head page-head">
+    <h1 class="story-title">Tags</h1>
+  </header>
+  <ul class="tag-cloud">
+    {% for term in terms | sort(attribute="name") %}
+    <li><a class="tag-sticker" href="{{ term.permalink | safe }}">
+      <span class="tag-name">{{ term.name }}</span>
+      <span class="tag-count">{{ term.pages | length }}<span class="visually-hidden"> posts</span></span>
+    </a></li>
     {% endfor %}
-  </div>
-</main>
-{% endif %}
+  </ul>
+</div>
 {% endblock content %}

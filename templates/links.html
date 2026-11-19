@@ -1,0 +1,32 @@
+{#- Links in the comic look: groups from data/links.toml, each link a row
+    with its picture in a small ink frame. -#}
+{% extends "comic-base.html" %}
+{% block title %}{{ page.title }} | {{ config.title }}{% endblock title %}
+{% block head %}
+<meta name="description" content="Where else to find {{ config.extra.footer.copyright_holder }}, and what this site runs on.">
+<link rel="canonical" href="{{ page.permalink | safe }}">
+{% endblock head %}
+{% block content %}
+{% set links_data = load_data(path="data/links.toml") %}
+<div class="story listing">
+  <header class="story-head page-head">
+    <h1 class="story-title">{{ page.title }}</h1>
+    <div class="posts-intro">{{ page.content | safe }}</div>
+  </header>
+  {% for group in links_data.groups %}
+  <section class="link-group" aria-labelledby="g{{ loop.index }}">
+    <h2 id="g{{ loop.index }}">{{ group.name }}</h2>
+    <p class="link-group-desc">{{ group.desc }}</p>
+    <ul class="link-list">
+      {% for item in group.items %}
+      <li><a class="link-row" href="{{ item.url }}" rel="noopener">
+        <img src="{% if item.avatar is starting_with(pat="/") %}{{ get_url(path=item.avatar) }}{% else %}{{ item.avatar }}{% endif %}" alt="" width="48" height="48">
+        <span class="link-name">{{ item.name }}</span>
+        <span class="link-desc">{{ item.description }}</span>
+      </a></li>
+      {% endfor %}
+    </ul>
+  </section>
+  {% endfor %}
+</div>
+{% endblock content %}

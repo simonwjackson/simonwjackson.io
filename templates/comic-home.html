@@ -1,0 +1,88 @@
+{#-
+  Home in the comic look: a comic strip, not a list of posts. Simon and his
+  cast each get a panel and a balloon, under a caption that says who they
+  are. The newest post follows as its own wide panel. Then three doors:
+  Posts, Logs, About.
+-#}
+{% extends "comic-base.html" %}
+{% block title %}{{ config.title }}{% endblock title %}
+{% block head %}
+<meta name="description" content="Simon W. Jackson: design engineer by trade, tinkerer by habit. Posts about what he builds, most of it with an AI agent.">
+<meta property="og:title" content="{{ config.title }}">
+<meta property="og:type" content="website">
+<meta property="og:url" content="{{ config.base_url | safe }}">
+<link rel="canonical" href="{{ get_url(path='@/_index.md') }}">
+<link rel="alternate" type="text/plain" title="Index for agents" href="{{ get_url(path='llms.txt') }}">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": {{ config.title | json_encode | safe }},
+  "url": {{ config.base_url | json_encode | safe }},
+  "author": {"@type": "Person", "name": {{ config.extra.footer.copyright_holder | json_encode | safe }}, "url": {{ config.base_url | json_encode | safe }}}
+}
+</script>
+{% endblock head %}
+
+{% block main %}
+{%- set posts_section = get_section(path="posts/_index.md") -%}
+{%- set_global latest = false -%}
+{%- for p in posts_section.pages -%}
+  {%- if not latest and not p.extra.archived | default(value=false) %}{% set_global latest = p %}{% endif -%}
+{%- endfor -%}
+<main class="home">
+  <header class="home-hero">
+    <h1 class="home-name">Simon W. Jackson</h1>
+    <p class="home-tag">Design engineer by trade. Tinkerer by habit.</p>
+  </header>
+
+  <section class="strip-wrap" aria-labelledby="cast-caption">
+  <h2 class="strip-caption" id="cast-caption">Meet the cast. They interrupt most of my posts.</h2>
+  <ol class="strip">
+    <li class="panel panel--simon">
+      <p class="balloon">I tinker. Usually with an agent at the keyboard.</p>
+      <p class="who"><img class="who-face" src="{{ get_url(path='headshot.jpg') }}" alt="" width="800" height="800"><span class="who-text"><span class="who-name">Simon</span><span class="who-role">tells the story</span></span></p>
+    </li>
+    <li class="panel panel--curious">
+      <p class="balloon">What happens if we try it?</p>
+      <p class="who"><span class="who-badge" aria-hidden="true">?</span><span class="who-text"><span class="who-name">Curious</span><span class="who-role">asks</span></span></p>
+    </li>
+    <li class="panel panel--cautious">
+      <p class="balloon">Is that a one-way door?</p>
+      <p class="who"><span class="who-badge" aria-hidden="true">!</span><span class="who-text"><span class="who-name">Cautious</span><span class="who-role">warns</span></span></p>
+    </li>
+    <li class="panel panel--agent">
+      <p class="balloon balloon--robot">I'll take the details. You keep the questions.</p>
+      <p class="who"><span class="who-badge" aria-hidden="true"><svg viewBox="0 0 16 16" width="1em" height="1em"><path d="M9.5 1 3 9h4.2L5.8 15 13 6.6H8.7z" fill="currentColor"/></svg></span><span class="who-text"><span class="who-name">Agent</span><span class="who-role">does the details</span></span></p>
+    </li>
+    <li class="panel panel--tired">
+      <p class="balloon">You'll be holding the cable again.</p>
+      <p class="who"><span class="who-badge" aria-hidden="true">z</span><span class="who-text"><span class="who-name">Tired</span><span class="who-role">counts the cost</span></span></p>
+    </li>
+  </ol>
+  <p class="strip-more"><a href="{{ get_url(path='@/about/index.md') }}">More about the cast</a></p>
+  </section>
+
+  {%- if latest %}
+  <section class="panel panel--latest home-latest-panel" aria-label="Newest post">
+    <a class="latest" href="{{ latest.permalink | safe }}">
+      {%- if latest.extra.cover %}
+      <span class="latest-art"><img src="{{ latest.permalink | safe }}{{ latest.extra.cover }}" alt="{{ latest.extra.cover_alt }}"></span>
+      {%- endif %}
+      <span class="latest-text">
+        <span class="caption">Newest post</span>
+        <span class="latest-title">{{ latest.title }}</span>
+        <span class="latest-desc">{{ latest.description }}</span>
+        {%- if latest.extra.log_page %}<span class="latest-log">With the agent's build log</span>{% endif %}
+      </span>
+    </a>
+  </section>
+  {%- endif %}
+
+  <nav class="home-doors" aria-label="Where to go">
+    <a href="{{ get_url(path='@/posts/_index.md') }}"><span>Posts</span><small>What I've built</small></a>
+    <a href="{{ get_url(path='@/logs/_index.md') }}"><span>Logs</span><small>Written by the agent</small></a>
+    <a href="{{ get_url(path='@/about/index.md') }}"><span>About</span><small>Me, and the cast</small></a>
+  </nav>
+</main>
+{% endblock main %}

@@ -1,16 +1,34 @@
 +++
 title = "About"
-template = "about.html"
+description = "Simon W. Jackson: design engineer, creative technologist and perpetual tinkerer, and the cast of voices in his posts."
+template = "comic-page.html"
+
+[extra]
+portrait = "headshot.jpg"
+portrait_alt = "Simon W. Jackson, smiling a little, in a blue T-shirt."
 +++
 
-## Hello, I'm Simon
+I'm Simon. I build front ends and design systems for a living, and I tinker with everything else.
 
-I am a UI developer and design engineer. Since 2007, I have built front ends and design systems for companies including Amaze Insights, Hilton, Grocery TV, Bottomline Technologies, Lumenalta, and Dell. At Dell, I built a specialized text editor that allowed designers to prototype voice interactions for gaming applications, contributing to patent US20200227034A1.
+I'm filled with questions. These days an agent takes the details that could consume me, and that leaves room to explore. Exploring is mostly asking questions anyway.
 
-Most of my work sits between designers and engineers: design systems, component libraries, prototyping tools, and the tooling that keeps them in sync.
+I'll let the cast from my posts handle the rest of the introductions.
 
----
+## The cast
 
+{% <voice who="curious"> %}I ask the questions. He has a lot of them, so I'm busy.{% </voice> %}
+
+{% <voice who="cautious"> %}I count the one-way doors. If undoing it takes a soldering iron, I speak up.{% </voice> %}
+
+{% <voice who="tired"> %}I notice every time he gets pulled back in to press a button. Then I mention it.{% </voice> %}
+
+{% <agent> %}I take the details: the commands, the logs, the wrong guesses. He keeps the questions.{% </agent> %}
+
+## Work
+
+Since 2007 I have built front ends and design systems for companies including Amaze Insights, Hilton, Grocery TV, Bottomline Technologies, Lumenalta, and Dell. Most of that work sits between designers and engineers.
+
+{% <fold summary="Work history, 2007 to now" hint="8 roles, a patent, the resume"> %}
 ### Experience
 
 - **Design Engineer** at Amaze Insights (2025–present)  
@@ -52,10 +70,9 @@ Full resume:
 
 - [PDF](/simon-w-jackson-creative-technologist-resume.pdf)
 - [DOCX](/simon-w-jackson-creative-technologist-resume.docx)
+{% </fold> %}
 
----
-
-### Connect
+## Say hello
 
 - [Email: hello@simonwjackson.io](mailto:hello@simonwjackson.io)
 - [GitHub](https://github.com/simonwjackson)

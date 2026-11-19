@@ -43,7 +43,7 @@ Setup Tutorial
 
 First, we need to secure our screensaver.
 
-1.  Open `System Preferences` and click on the `Security &amp; Privacy` icon
+1.  Open `System Preferences` and click on the `Security & Privacy` icon
 2.  Click on the `General` tab.
 3.  Check the box that starts with `Require password`.
 4.  Change the amount of time to wait after screensaver begins to `immediately`.
@@ -53,7 +53,7 @@ First, we need to secure our screensaver.
 Now lets activate the alternative keyboard layout.
 
 1.  In the `System Preferences` window, click on the `Show All` button
-2.  Click the `Language &amp; Text` icon.
+2.  Click the `Language & Text` icon.
 3.  On the top of the window, click the the `Input Sources` tab.
 4.  On the left of the windows, you will now see a list of available keyboard layouts. Scroll down to find `Dvorak` and check the box to it’s left.
 

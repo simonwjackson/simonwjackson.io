@@ -1,0 +1,24 @@
+{#- Not found, in the comic look. -#}
+{% extends "comic-base.html" %}
+{% block title %}Page not found | {{ config.title }}{% endblock title %}
+{% block head %}<meta name="robots" content="noindex">{% endblock head %}
+{% block content %}
+<article class="story page">
+  <header class="story-head page-head">
+    <h1 class="story-title">Page not found</h1>
+  </header>
+  <div class="story-body">
+    <aside class="voice voice--curious" aria-label="Curious">
+      <span class="voice-mark" aria-hidden="true">?</span>
+      <div class="voice-body"><span class="voice-name">Curious</span> Where did it go?</div>
+    </aside>
+    <aside class="agent">
+      <div class="agent-shape">
+        <div class="agent-head"><span class="agent-name">Agent</span></div>
+        <div class="agent-body">Nothing lives at this address. It may have moved, or the link may have a typo.</div>
+      </div>
+    </aside>
+    <p>Try <a href="{{ get_url(path='@/posts/_index.md') }}">Posts</a>, <a href="{{ get_url(path='@/archive/index.md') }}">Archives</a> for older posts, or the <a href="{{ get_url(path='@/_index.md') }}">home page</a>.</p>
+  </div>
+</article>
+{% endblock content %}

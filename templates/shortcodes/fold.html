@@ -1,0 +1,14 @@
+{#-
+  A fold for material a reader may skip: a native <details> on paper, with
+  a lettered summary. It works without JavaScript, opens for find-in-page
+  and links into it, and prints open.
+  Use: {% <fold summary="Work history, 2007 to now"> %}Markdown.{% </fold> %}
+    summary  what the fold holds
+    hint     optional short note after the summary, e.g. "8 roles"
+-#}
+{% component fold(summary, hint="") %}
+<details class="fold">
+  <summary class="fold-summary"><span class="fold-label">{{ summary }}</span>{% if hint %}<span class="fold-hint-text">{{ hint }}</span>{% endif %}</summary>
+  <div class="fold-body">{{ body | markdown | safe }}</div>
+</details>
+{% endcomponent fold %}

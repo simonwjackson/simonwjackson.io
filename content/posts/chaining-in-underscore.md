@@ -7,6 +7,8 @@ date = 2012-09-13
 tags = ["Guide"]
 
 [extra]
+# Listed in Archives only, not on the Posts list.
+archived = true
 toc = true
 +++
 

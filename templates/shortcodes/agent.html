@@ -1,0 +1,19 @@
+{#-
+  An Agent line, in its robot balloon: cut corners and a jagged tail.
+  Use: {% <agent cut={true} when="two minutes in" src="…"> %}Text.{% </agent> %}
+    cut   true when the message cut into the scene (shown with the ↯ mark)
+    when  optional time label, e.g. "Tuesday 7:55 pm"
+    src   link to the original message in the transcript; no link when empty
+-#}
+{% component agent(cut=false, when="", src="") %}
+<aside class="agent{% if cut %} agent--cut{% endif %}">
+  <div class="agent-shape">
+    <div class="agent-head">
+      {%- if cut %}<span class="agent-bolt" aria-hidden="true"><svg viewBox="0 0 16 16" width="1em" height="1em"><path d="M9.5 1 3 9h4.2L5.8 15 13 6.6H8.7z" fill="currentColor"/></svg></span>{% endif -%}
+      <span class="agent-name">Agent{% if when %}, {{ when }}{% endif %}</span>
+      {%- if src %}<a class="agent-src" href="{{ src }}">original</a>{% endif %}
+    </div>
+    <div class="agent-body">{{ body | markdown(inline=true) | safe }}</div>
+  </div>
+</aside>
+{% endcomponent agent %}

@@ -1,0 +1,44 @@
+{#-
+  One fold: the part of the build log that goes with this stretch of the
+  story, in a native <details>. The log page stays the one source; this
+  takes the sections whose h2 ids are listed. Find-in-page and links to an
+  id inside open the fold on their own, and it works without JavaScript.
+
+  Log sections keep their h2 when the fold sits before the story's first
+  h2 (top=true) and step down one level otherwise, so headings never skip a
+  level. data-nosnippet keeps search snippets to the story; the log page is
+  the canonical home of the log text.
+
+-#}
+{% component logfold(lp, ids, top=false) %}
+{%- set pieces = lp.content | split(pat='<h2 id="') -%}
+{%- set wanted = ids | split(pat=",") -%}
+{%- set_global html = "" -%}
+{%- set_global titles = "" -%}
+{%- set_global words = 0 -%}
+{%- for piece in pieces -%}
+  {%- set pid = piece | split(pat='"') | first -%}
+  {%- if pid in wanted -%}
+    {%- set head = piece | split(pat='</h2>') | first -%}
+    {%- set title = ('<h2 id="' ~ head) | striptags | trim -%}
+    {%- if titles %}{% set_global titles = titles ~ ", " ~ title %}{% else %}{% set_global titles = title %}{% endif -%}
+    {%- set_global words = words + (piece | striptags | wordcount) -%}
+    {%- if top -%}
+    {%- set_global html = html ~ '<h2 id="log-' ~ piece -%}
+    {%- else -%}
+    {%- set_global html = html ~ '<h3 id="log-' ~ (piece | replace(from='<h3', to='<h4') | replace(from='</h3>', to='</h4>') | replace(from='</h2>', to='</h3>')) -%}
+    {%- endif -%}
+  {%- endif -%}
+{%- endfor -%}
+<details class="logpart agent">
+  <summary class="agent-shape logpart-summary">
+    <span class="logpart-label">Build log for this part</span>
+    <span class="logpart-titles">{{ titles }}</span>
+    <span class="logpart-size">{{ words }} words, by the agent</span>
+  </summary>
+  <div class="logpart-body log-body" data-nosnippet>
+    {{ html | safe }}
+    <p class="logpart-more"><a href="{{ lp.permalink | safe }}#{{ wanted | first }}">This part in the full log</a></p>
+  </div>
+</details>
+{% endcomponent logfold %}

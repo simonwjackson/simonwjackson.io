@@ -7,6 +7,8 @@ date = 2019-09-13
 tags = ["Raspberry Pi", "Node.js"]
 
 [extra]
+# Listed in Archives only, not on the Posts list.
+archived = true
 toc = true
 +++
 

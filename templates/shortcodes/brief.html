@@ -1,0 +1,12 @@
+{#-
+  A heads-up before a log or post starts: what it covers, who did what,
+  and how to read it. Not the start of the story.
+  Use: {% <brief> %}Markdown paragraphs.{% </brief> %}
+    label  the box's name; default "Before you start"
+-#}
+{% component brief(label="Before you start") %}
+<section class="brief" aria-label="{{ label }}">
+  <h2 class="brief-label">{{ label }}</h2>
+  <div class="brief-body">{{ body | markdown | safe }}</div>
+</section>
+{% endcomponent brief %}

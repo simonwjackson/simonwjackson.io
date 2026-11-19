@@ -1,4 +1,8 @@
-{% extends "_base.html" %}
+{#-
+  The Logs section in the comic look. Each log is a card in the Agent's
+  robot shape: cut corners, ink, because an agent wrote it.
+-#}
+{% extends "comic-base.html" %}
 {% block title %}{{ section.title }} | {{ config.title }}{% endblock title %}
 {% block head %}
 <meta name="description" content="{{ section.description }}" />
@@ -7,51 +11,33 @@
 <meta property="og:url" content="{{ section.permalink | safe }}" />
 <meta property="og:description" content="{{ section.description }}" />
 <link rel="alternate" type="text/plain" title="Index for agents" href="{{ get_url(path='llms.txt') }}">
-<style>
-  .logs-intro p + p { margin-top: 0.75em; }
-  .logs-intro a { text-decoration: underline; text-underline-offset: 0.15em; }
-</style>
 {% endblock head %}
 {% block content %}
-<main class="article-list">
-  <article class="article-block title-block">
-    <h2 class="heading">{{ section.title }}</h2>
-  </article>
+<div class="story">
+  <header class="story-head">
+    <h1 class="story-title story-title--log">{{ section.title }}</h1>
+  </header>
 
-  <article class="article-block">
-    <div class="article-content">
-      <div class="article-summary logs-intro">
-        {{ section.content | safe }}
-      </div>
-    </div>
-  </article>
+  <div class="story-body logs-intro">
+    {{ section.content | safe }}
+  </div>
 
-  {% for post in section.pages %}
-  <article class="article-block">
-    <div class="article-content">
-      <div class="article-header">
-        <a href="{{ post.permalink | safe }}" class="title-link">
-          <h2 class="heading">{{ post.title }}</h2>
-        </a>
+  <ul class="log-list">
+    {% for log in section.pages %}
+    <li class="agent log-card">
+      <div class="agent-shape">
+        <a class="log-card-title" href="{{ log.permalink | safe }}">{{ log.title }}</a>
+        <p class="log-card-desc">{{ log.description }}</p>
+        <p class="log-card-meta">
+          <span>Written by {{ log.extra.agent }}</span>
+          <time datetime="{{ log.date }}">{{ log.date | date(format="%b %-d, %Y") }}</time>
+          {% if not log.extra.reviewed %}<span>Not reviewed</span>{% endif %}
+        </p>
       </div>
-      <div class="article-summary">
-        <p class="description">{{ post.description }}</p>
-      </div>
-      <div class="meta-line">
-        {{<date_meta item={post}/>}}
-        <span class="separator">/</span>
-        <span class="log-agent">Written by {{ post.extra.agent }}</span>
-      </div>
-    </div>
-  </article>
-  {% else %}
-  <article class="article-block">
-    <div class="article-content">
-      <div class="article-summary">
-        <p class="description">No logs are published yet.</p>
-      </div>
-    </div>
-  </article>
-  {% endfor %}
-</main>
+    </li>
+    {% else %}
+    <li class="log-empty">No logs are published yet.</li>
+    {% endfor %}
+  </ul>
+</div>
 {% endblock content %}

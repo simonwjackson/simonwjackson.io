@@ -3,14 +3,20 @@
   this template says so at the top of the page, in the page metadata, and in
   the Markdown copy (scripts/emit-markdown.sh).
 
+  In the comic look, the log is the Agent talking: its credits name the
+  agent and the model, and the note about how it was made sits in the
+  Agent's robot balloon.
+
   Front matter, all under [extra]:
     agent        required  the agent's name, e.g. "Claude"
     agent_model  required  the exact model ID that ran, e.g. "claude-opus-5-5"
     agent_maker  optional  the company behind the model, e.g. "Anthropic"
     reviewed     required  true only if Simon read the whole log before publishing
     repository   optional  URL of the code the log describes
+    story        optional  path of Simon's post about the same work; shows
+                           the Post / Build log switch
 #}
-{% extends "_base.html" %}
+{% extends "comic-base.html" %}
 {% block title %}{{ page.title }} | {{ config.title }}{% endblock title %}
 
 {% block head %}
@@ -63,73 +69,49 @@
   "encoding": {"@type": "MediaObject", "encodingFormat": "text/markdown", "contentUrl": {{ markdown_url | json_encode | safe }}}
 }
 </script>
-<style>
-  .article-content > blockquote.markdown-alert-note.log-disclosure::before { content: "How this was made"; }
-  .article-content > blockquote.log-disclosure p + p { margin-top: 0.5em; }
-  .log-license { margin-top: 3em; font-size: 0.9em; opacity: 0.8; }
-</style>
 {% endblock head %}
 
 {% block content %}
 {% set markdown_url = page.permalink ~ "index.md" %}
 {% set cc0 = "https://creativecommons.org/publicdomain/zero/1.0/" %}
-{% set default_content_lang = config.extra.content_lang | default(value=lang, boolean=true) %}
-<article class="content-article" lang="{{ page.extra.content_lang | default(value=default_content_lang, boolean=true) }}">
-  <main class="article-content">
-    <div class="article-intro-container">
-      <div class="intro-header">
-        <h1 class="heading">{{ page.title }}</h1>
-        <p class="subtitle">Written by {{ page.extra.agent }}, an AI agent</p>
-        <div class="meta-line">
-          {{<date_meta item={page}/>}}
-        </div>
+<article class="story story--log">
+  <header class="story-head">
+    <h1 class="story-title story-title--log">{{ page.title }}</h1>
+    <dl class="story-credits story-credits--log">
+      <div><dt>Written by</dt><dd>{{ page.extra.agent }}, an AI agent</dd></div>
+      <div><dt>Model</dt><dd>{{ page.extra.agent_model }}</dd></div>
+      <div><dt>Directed by</dt><dd>{{ config.extra.footer.copyright_holder }}</dd></div>
+      <div><dt>Date</dt><dd><time datetime="{{ page.date }}">{{ page.date | date(format="%b %-d, %Y") }}</time></dd></div>
+    </dl>
+
+    {%- if page.extra.story %}
+    {% set story = page.extra.story %}{% set log = page.permalink %}{% set current = "log" %}{% set log_min = page.reading_time %}
+    {% include "partials/view-switch.html" %}
+    {%- endif %}
+
+    <aside class="agent log-disclosure">
+      <div class="agent-shape">
+        <div class="agent-head"><span class="agent-name">How this was made</span></div>
+        <p class="agent-body">{{ page.extra.agent }} ({{ page.extra.agent_model }}{% if page.extra.agent_maker %}, made by {{ page.extra.agent_maker }}{% endif %}) wrote this log. {{ config.extra.footer.copyright_holder }} directed the work and ran each step on real hardware. {% if page.extra.reviewed %}He read this log before publishing it.{% else %}He did not edit or review this log.{% endif %}</p>
+        <p class="agent-body">It keeps the dead ends, the wrong guesses and their corrections, so that someone else, or their agent, can repeat the work. <a href="{{ markdown_url | safe }}">Plain Markdown copy for agents</a>{% if page.extra.repository %}, and <a href="{{ page.extra.repository | safe }}">the code it describes</a>{% endif %}. <a href="{{ get_url(path='@/logs/_index.md') }}">About these logs</a>.</p>
       </div>
+    </aside>
 
-      <div class="intro-body">
-        {% if page.description %}
-        <div class="intro-abstract">
-          <div class="abstract-title">ABSTRACT</div>
-          <p class="description">{{ page.description }}</p>
-        </div>
-        {% endif %}
+    {% if page.toc and page.extra.toc | default(value=true) %}
+    <details class="log-toc">
+      <summary>Contents</summary>
+      <ol>
+        {% for h in page.toc %}
+        <li><a href="{{ h.permalink | safe }}">{{ h.title }}</a></li>
+        {% endfor %}
+      </ol>
+    </details>
+    {% endif %}
+  </header>
 
-        {% if page.toc and page.extra.toc | default(value=true) %}
-        <details class="intro-toc">
-          <summary class="toc-title">CONTENTS</summary>
-          <div class="toc-wrapper">
-            <ul class="toc-list">
-              <li class="toc-root">
-                <a href="#" class="active-toc">{{ page.title }}</a>
-                <ul>
-                  {% for h1 in page.toc %}
-                  <li>
-                    <a href="{{ h1.permalink | safe }}">{{ h1.title }}</a>
-                    {% if h1.children %}
-                    <ul>
-                      {% for h2 in h1.children %}
-                      <li><a href="{{ h2.permalink | safe }}">{{ h2.title }}</a></li>
-                      {% endfor %}
-                    </ul>
-                    {% endif %}
-                  </li>
-                  {% endfor %}
-                </ul>
-              </li>
-            </ul>
-          </div>
-        </details>
-        {% endif %}
-      </div>
-    </div>
-
-    <blockquote class="markdown-alert-note log-disclosure">
-      <p>{{ page.extra.agent }} ({{ page.extra.agent_model }}{% if page.extra.agent_maker %}, made by {{ page.extra.agent_maker }}{% endif %}) wrote this log while it did the work. {{ config.extra.footer.copyright_holder }} directed the work and ran each step on real hardware. {% if page.extra.reviewed %}He read this log before publishing it.{% else %}He did not edit or review this log.{% endif %}</p>
-      <p>It keeps the dead ends, the wrong guesses and their corrections, so that someone else, or their agent, can repeat the work. <a href="{{ markdown_url | safe }}">Plain Markdown copy for agents</a>{% if page.extra.repository %}, and <a href="{{ page.extra.repository | safe }}">the code it describes</a>{% endif %}. <a href="{{ get_url(path='@/logs/_index.md') }}">About these logs</a>.</p>
-    </blockquote>
-
+  <div class="story-body log-body">
     {{ page.content | safe }}
-
     <p class="log-license">The text of this log is dedicated to the public domain under <a href="{{ cc0 }}" rel="license">CC0 1.0</a>.</p>
-  </main>
+  </div>
 </article>
 {% endblock content %}

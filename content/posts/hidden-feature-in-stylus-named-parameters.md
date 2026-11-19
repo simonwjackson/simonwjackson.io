@@ -7,6 +7,8 @@ date = 2013-05-24
 tags = ["CSS", "Stylus"]
 
 [extra]
+# Listed in Archives only, not on the Posts list.
+archived = true
 toc = true
 +++
 

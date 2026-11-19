@@ -1,0 +1,34 @@
+{#-
+  What Simon said to the agent, and what the agent did next: Simon's round
+  speech balloon, then the agent's robot balloon.
+  Use: {% <exchange said="…" said_note="Shortened" cut={true} did_when="two minutes in"> %}Reply.{% </exchange> %}
+    said       Simon's prompt, as shown in the post
+    said_note  e.g. "Shortened" when the prompt is cut down
+    said_src   link to the exact prompt in the transcript
+    did_when   time label for the agent's reply
+    did_src    link to the reply in the transcript
+    cut        true when the reply cut into the scene (↯)
+    body       the agent's reply; leave it empty for a prompt alone
+-#}
+{% component exchange(said, said_note="", said_src="", did_when="", did_src="", cut=false) %}
+{%- set reply = body | default(value="") | trim -%}
+<figure class="exchange{% if not reply %} exchange--said-only{% endif %}">
+  <div class="exchange-said">
+    <div class="exchange-label">Simon</div>
+    <p class="exchange-prompt">{{ said }}</p>
+    {%- if said_src %}<a class="exchange-src" href="{{ said_src }}">{% if said_note %}{{ said_note }}. See the original{% else %}Original{% endif %}</a>{% elif said_note %}<span class="exchange-src">{{ said_note }}</span>{% endif %}
+  </div>
+  {%- if reply %}
+  <div class="agent{% if cut %} agent--cut{% endif %} exchange-did">
+    <div class="agent-shape">
+      <div class="agent-head">
+        {%- if cut %}<span class="agent-bolt" aria-hidden="true"><svg viewBox="0 0 16 16" width="1em" height="1em"><path d="M9.5 1 3 9h4.2L5.8 15 13 6.6H8.7z" fill="currentColor"/></svg></span>{% endif -%}
+        <span class="agent-name">Agent{% if did_when %}, {{ did_when }}{% endif %}</span>
+        {%- if did_src %}<a class="agent-src" href="{{ did_src }}">original</a>{% endif %}
+      </div>
+      <p class="agent-body exchange-reply">{{ reply | markdown(inline=true) | safe }}</p>
+    </div>
+  </div>
+  {%- endif %}
+</figure>
+{% endcomponent exchange %}

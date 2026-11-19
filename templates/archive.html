@@ -1,0 +1,39 @@
+{#-
+  Archives in the comic look: every post, current and archived, by year.
+  A year is a lettered stamp; a row is the date, the title, and the robot
+  chip when the post has an agent's build log.
+-#}
+{% extends "comic-base.html" %}
+{% block title %}{{ page.title }} | {{ config.title }}{% endblock title %}
+{% block head %}
+<meta name="description" content="Every post by {{ config.extra.footer.copyright_holder }}, by year.">
+<link rel="canonical" href="{{ page.permalink | safe }}">
+{% endblock head %}
+{% block content %}
+{% set posts_section = get_section(path="posts/_index.md") %}
+{% set year_groups = posts_section.pages | group_by(attribute="year") %}
+{% set years = year_groups | keys | sort | reverse %}
+<div class="story listing">
+  <header class="story-head page-head">
+    <h1 class="story-title">{{ page.title }}</h1>
+    <p class="posts-intro">Every post, newest first. {{ posts_section.pages | length }} posts since {{ years | last }}.</p>
+  </header>
+
+  {% for year in years %}
+  <section class="year" aria-labelledby="y{{ year }}">
+    <h2 class="year-stamp" id="y{{ year }}">{{ year }}</h2>
+    <ol class="year-list">
+      {% for post in year_groups[year] | sort(attribute="date") | reverse %}
+      <li class="year-row">
+        <time datetime="{{ post.date }}">{{ post.date | date(format="%b %-d") }}</time>
+        <a href="{{ post.permalink | safe }}">{{ post.title }}</a>
+        {%- if post.extra.log_page %}
+        <span class="year-chip" title="With the agent's build log"><span class="agent-bolt" aria-hidden="true"><svg viewBox="0 0 16 16" width="1em" height="1em"><path d="M9.5 1 3 9h4.2L5.8 15 13 6.6H8.7z" fill="currentColor"/></svg></span><span class="visually-hidden">With the agent's build log</span></span>
+        {%- endif %}
+      </li>
+      {% endfor %}
+    </ol>
+  </section>
+  {% endfor %}
+</div>
+{% endblock content %}

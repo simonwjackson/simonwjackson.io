@@ -7,6 +7,8 @@ date = 2021-04-12
 tags = ["Gear", "Everyday Carry"]
 
 [extra]
+# Listed in Archives only, not on the Posts list.
+archived = true
 toc = true
 +++
 
